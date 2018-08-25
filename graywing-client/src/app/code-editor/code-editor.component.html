@@ -1,0 +1,13 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Query</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-form-field class="query-textfield">
+      <textarea matInput placeholder="Enter your SPARQL query here." rows="10" class="query-textarea" [(ngModel)]="codeContent"></textarea>
+    </mat-form-field>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-button (click)="onExecuteClick()">Execute</button>
+  </mat-card-actions>
+</mat-card>
