@@ -2,34 +2,66 @@ export class SparqlQueryResult {
 
     public variables: string[];
 
-    public results;
+    public resultBoolean?: boolean;
+
+    public records: SparqlQueryRecord[];
 
 }
 
-export class SparqlQueryResultItem {
-    public bindings: { [name: string]: SparqlVariableBindingValue }
+/**
+ * This is actually a `<result>` node of the SPARQL query result.
+ * Used "record" here to distinguish a single result from the whole SPARQL query results.
+ */
+export class SparqlQueryRecord {
+    public constructor(public readonly bindings: { [name: string]: SparqlVariableBindingValue })
+    {
+
+    }
 }
 
 
 export class SparqlUri {
 
-    public value: string;
+    public constructor(public readonly value: string)
+    {
+
+    }
+
+    public toString()
+    {
+        return this.value;
+    }
 
 }
 
 export class SparqlLiteral {
 
-    public value: string;
+    public constructor(public readonly value: string, public readonly language?: string, public readonly dataType?: string)
+    {
+        
+    }
 
-    public language?: string;
-
-    public dateType?: string;
+    public toString()
+    {
+        let s = this.value;
+        if (this.language) s = s + "@" + this.language;
+        if (this.dataType) s = s + "^^" + this.dataType;
+        return s;
+    }
 
 }
 
 export class SparqlBlankNode {
 
-    public name: string;
+    public constructor(public readonly name: string)
+    {
+
+    }
+
+    public toString()
+    {
+        return "_:" + name;
+    }
 
 }
 

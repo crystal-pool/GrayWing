@@ -41,7 +41,7 @@ export class SparqlMockService implements ISparqlService {
           <binding name="cat">
             <uri>https://crystalpool.cxuesong.com/entity/Q713</uri>
           </binding>
-        </result>
+        </result></results></sparql>
     `));
   }
 
