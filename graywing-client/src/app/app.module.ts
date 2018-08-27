@@ -3,24 +3,31 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { MaterialRefModule } from './material-ref/material-ref.module';
-import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+
 import { ISparqlServiceInjectionToken } from './sparql.service.contract';
+import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { SparqlMockService } from './sparql.service.mock';
+import { ResultViewerComponent } from './result-viewer/result-viewer.component';
+import { environment } from '../environments/environment';
+import { SparqlService } from './sparql.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CodeEditorComponent
+    CodeEditorComponent,
+    ResultViewerComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     MaterialRefModule,
+    NgxDatatableModule,
     HttpClientModule
   ],
-  providers: [{ provide: ISparqlServiceInjectionToken, useClass: SparqlMockService }],
+  providers: [{ provide: ISparqlServiceInjectionToken, useClass: environment.production ? SparqlService : SparqlMockService }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
