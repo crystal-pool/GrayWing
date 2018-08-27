@@ -1,5 +1,7 @@
 export class SparqlQueryResult {
 
+    static readonly Empty: SparqlQueryResult = new SparqlQueryResult();
+
     public variables: string[];
 
     public resultBoolean?: boolean;

@@ -24,7 +24,7 @@ export class SparqlMockService implements ISparqlService {
       <results>
         <result>
           <binding name="cat">
-            <uri>https://crystalpool.cxuesong.com/entity/Q621</uri>
+            <uri>https://crystalpool.cxuesong.com/entity/Q621#${Math.random()}</uri>
           </binding>
         </result>
         <result>
