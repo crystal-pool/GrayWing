@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /GrayWing/Data/wbdump.ttl
+/GrayWing/wwwroot/
