@@ -2,9 +2,17 @@ import { SparqlQueryResult, SparqlQueryRecord, SparqlUri, SparqlLiteral, SparqlB
 import { Observable } from 'rxjs';
 import { InjectionToken } from '@angular/core';
 
+export interface ISparqlQueryStatus {
+    // undefined indicates the user hasn't executed any query yet.
+    status?: "busy" | "successful" | "failed";
+    message?: string;
+}
+
 export interface ISparqlService {
 
     readonly currentResult: Observable<SparqlQueryResult>;
+
+    readonly currentStatus: Observable<ISparqlQueryStatus>;
 
     executeQuery(queryExpr: string);
 

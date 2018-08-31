@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SparqlQueryResult } from './sparql-models';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { ISparqlService, ParseQueryResult } from './sparql.service.contract';
+import { ISparqlService, ParseQueryResult, ISparqlQueryStatus } from './sparql.service.contract';
 import { delay } from 'rxjs/operators';
 
 @Injectable({
@@ -12,12 +12,13 @@ export class SparqlMockService implements ISparqlService {
 
   constructor(private http: HttpClient) { }
 
-  private readonly currentResultDirect = new BehaviorSubject<SparqlQueryResult>(null);
-  public readonly currentResult: Observable<SparqlQueryResult> = this.currentResultDirect.pipe(delay(1000));
+  public readonly currentResult: BehaviorSubject<SparqlQueryResult> = new BehaviorSubject<SparqlQueryResult>(null);
+  public readonly currentStatus: BehaviorSubject<ISparqlQueryStatus> = new BehaviorSubject<ISparqlQueryStatus>({});
 
-  public executeQuery(queryExpr: string)
-  {
-      this.currentResultDirect.next(ParseQueryResult(`<sparql xmlns="http://www.w3.org/2005/sparql-results#">
+  public executeQuery(queryExpr: string) {
+    let delayedAction = () => {
+      this.currentStatus.next({ status: "successful" });
+      this.currentResult.next(ParseQueryResult(`<sparql xmlns="http://www.w3.org/2005/sparql-results#">
       <head>
         <variable name="cat"/>
       </head>
@@ -43,6 +44,9 @@ export class SparqlMockService implements ISparqlService {
           </binding>
         </result></results></sparql>
     `));
+    };
+    window.setTimeout(delayedAction, 1000);
+    this.currentStatus.next({ status: "busy" });
   }
 
 }

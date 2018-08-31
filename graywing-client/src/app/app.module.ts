@@ -13,12 +13,14 @@ import { SparqlMockService } from './sparql.service.mock';
 import { ResultViewerComponent } from './result-viewer/result-viewer.component';
 import { environment } from '../environments/environment';
 import { SparqlService } from './sparql.service';
+import { StatusIndicatorComponent } from './status-indicator/status-indicator.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CodeEditorComponent,
-    ResultViewerComponent
+    ResultViewerComponent,
+    StatusIndicatorComponent
   ],
   imports: [
     BrowserModule,

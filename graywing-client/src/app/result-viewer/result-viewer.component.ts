@@ -39,8 +39,7 @@ export class ResultViewerComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
-    this.sparqlResultSubscription = this.sparqlService.currentResult.subscribe(value => { this.sparqlResult = value; },
-      error => { console.error(error); });
+    this.sparqlResultSubscription = this.sparqlService.currentResult.subscribe(value => { this.sparqlResult = value; });
   }
 
   ngOnDestroy(): void {
