@@ -39,7 +39,7 @@ namespace GrayWing.Controllers
 
         // POST sparql
         [HttpPost]
-        public async Task Post()
+        public async Task<IActionResult> Post()
         {
             var sb = new StringBuilder();
             var buffer = new Memory<char>(new char[QueryExpressionBufferSize]);
@@ -52,17 +52,24 @@ namespace GrayWing.Controllers
                     if (count < QueryExpressionBufferSize) break;
                     if (sb.Length > QueryExpressionMaximumLength)
                     {
-                        var content = new StringContent("The request query is too large.");
-                        Response.StatusCode = StatusCodes.Status413PayloadTooLarge;
-                        await content.CopyToAsync(Response.Body);
-                        return;
+                        return StatusCode(StatusCodes.Status413PayloadTooLarge, "The request query string is too long.");
                     }
                 }
             }
             var query = sb.ToString();
-            if (string.IsNullOrWhiteSpace(query)) return;
-            var result = await queryService.ExecuteQueryAsync(query, HttpContext.RequestAborted);
-            QueryResultSerializationHelper.SendToClient(HttpContext, result);
+            if (string.IsNullOrWhiteSpace(query))
+                return StatusCode(StatusCodes.Status400BadRequest, "Missing query string.");
+            try
+            {
+                var result = await queryService.ExecuteQueryAsync(query, HttpContext.RequestAborted);
+                QueryResultSerializationHelper.SendToClient(HttpContext, result);
+                return new EmptyResult();
+            }
+            catch (Exception ex)
+            {
+                // TODO we should distinguish between syntax error & query execution failure.
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
     }
