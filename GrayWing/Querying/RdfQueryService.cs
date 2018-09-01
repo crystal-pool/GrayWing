@@ -30,17 +30,24 @@ namespace GrayWing.Querying
 
     }
 
-    public class RdfQueryService
+    public class RdfQueryService : IDisposable
     {
 
         private readonly string dumpFileFullPath;
         private readonly RdfQueryServiceOptions options;
-        private IGraph graph;
-        private ISparqlDataset dataset;
-        private readonly Task initializationTask;
         private readonly ILogger logger;
         private readonly SparqlQueryParser queryParser;
-        private LeviathanQueryProcessor queryProcessor;
+
+        //////////
+        private readonly ReaderWriterLockSlim loadGraphTaskLock = new ReaderWriterLockSlim();
+        private Task<LoadedGraph> loadGraphTask;
+        private long lastGraphDumpCheckedTimestamp;
+        private DateTime lastGraphLoadedFileWriteTime;
+        private long lastGraphLoadedFileLength = -1;
+        //////////
+
+        // Every after this milliseconds, we will check on disk whether the graph dump has been changed.
+        private long CheckFileInterval = 3600 * 1000;
 
         public RdfQueryService(IOptions<RdfQueryServiceOptions> options, ILoggerFactory loggerFactory, IHostingEnvironment hosting)
         {
@@ -54,11 +61,66 @@ namespace GrayWing.Querying
             //
             logger = loggerFactory.CreateLogger<RdfQueryService>();
             queryParser = new SparqlQueryParser(SparqlQuerySyntax.Sparql_1_1);
-            // Initialization should finish here.
-            initializationTask = Task.Run(Initialize);
         }
 
-        private void Initialize()
+        private Task<LoadedGraph> EnsureGraphLoadedAsync()
+        {
+            loadGraphTaskLock.EnterReadLock();
+            try
+            {
+                if (loadGraphTask != null)
+                {
+                    if (!loadGraphTask.IsCompleted) return loadGraphTask;
+                    var tickCount = Environment.TickCount;
+                    if (Math.Sign(tickCount) == Math.Sign(lastGraphDumpCheckedTimestamp) && tickCount - lastGraphDumpCheckedTimestamp <= CheckFileInterval)
+                    {
+                        return loadGraphTask;
+                    }
+                }
+            }
+            finally
+            {
+                loadGraphTaskLock.ExitReadLock();
+            }
+            loadGraphTaskLock.EnterUpgradeableReadLock();
+            try
+            {
+                if (loadGraphTask == null || loadGraphTask.IsCompleted)
+                {
+                    // Check whether the file has been changed since last load.
+                    // TODO handle the cases where the files are symlinks
+                    var file = new FileInfo(dumpFileFullPath);
+                    loadGraphTaskLock.EnterWriteLock();
+                    try
+                    {
+                        if (file.LastWriteTimeUtc != lastGraphLoadedFileWriteTime || file.Length != lastGraphLoadedFileLength)
+                        {
+                            logger.LogInformation("Graph dump has been changed since last check.");
+                            loadGraphTask = Task.Run(LoadGraph);
+                            // Suppose the file hasn't been changed during we load it.
+                            lastGraphLoadedFileWriteTime = file.LastWriteTimeUtc;
+                            lastGraphLoadedFileLength = file.Length;
+                        }
+                        else
+                        {
+                            logger.LogInformation("Graph dump has not been changed since last check.");
+                        }
+                        lastGraphDumpCheckedTimestamp = Environment.TickCount;
+                    }
+                    finally
+                    {
+                        loadGraphTaskLock.ExitWriteLock();
+                    }
+                }
+                return loadGraphTask;
+            }
+            finally
+            {
+                loadGraphTaskLock.ExitUpgradeableReadLock();
+            }
+        }
+
+        private LoadedGraph LoadGraph()
         {
             var sw = Stopwatch.StartNew();
             try
@@ -67,11 +129,9 @@ namespace GrayWing.Querying
                 var g = new Graph();
                 FileLoader.Load(g, options.DumpFilePath);
                 var ds = new InMemoryDataset(g);
-                graph = g;
-                dataset = ds;
-                queryProcessor = new LeviathanQueryProcessor(ds);
                 logger.LogInformation("Initialized graph with {Tuples} tuples. Elapsed time: {Elapsed}.",
                     g.Triples.Count, sw.Elapsed);
+                return new LoadedGraph(new LeviathanQueryProcessor(ds), g, ds);
             }
             catch (Exception ex)
             {
@@ -80,24 +140,11 @@ namespace GrayWing.Querying
             }
         }
 
-        public Task<SparqlQueryResult> ExecuteQueryAsync(string expr, CancellationToken ct)
+        public async Task<SparqlQueryResult> ExecuteQueryAsync(string expr, CancellationToken ct)
         {
             if (expr == null) throw new ArgumentNullException(nameof(expr));
-            if (ct.IsCancellationRequested) return Task.FromCanceled<SparqlQueryResult>(ct);
-            if (initializationTask.IsCompletedSuccessfully)
-                return Task.Factory.StartNew(() => ExecuteQuery(expr, ct), ct, TaskCreationOptions.LongRunning, TaskScheduler.Current);
-            // Running / Error / Cancelled
-            return ExecuteQueryAsyncCore();
-
-            async Task<SparqlQueryResult> ExecuteQueryAsyncCore()
-            {
-                await initializationTask;
-                return await Task.Factory.StartNew(() => ExecuteQuery(expr, ct), ct, TaskCreationOptions.LongRunning, TaskScheduler.Current);
-            }
-        }
-
-        public SparqlQueryResult ExecuteQuery(string expr, CancellationToken ct)
-        {
+            ct.ThrowIfCancellationRequested();
+            var loadedGraph = await EnsureGraphLoadedAsync();
             if (expr == null) throw new ArgumentNullException(nameof(expr));
             ct.ThrowIfCancellationRequested();
             var sw = Stopwatch.StartNew();
@@ -106,14 +153,14 @@ namespace GrayWing.Querying
                 try
                 {
                     logger.LogInformation("Start execute query; ExprLength={ExprLength}.", expr.Length);
-                    var queryStr = new SparqlParameterizedString(expr) {Namespaces = graph.NamespaceMap};
+                    var queryStr = new SparqlParameterizedString(expr) { Namespaces = loadedGraph.Graph.NamespaceMap };
                     var query = queryParser.ParseFromString(queryStr);
                     logger.LogDebug("Parsed query. Elapsed time: {Elapsed}.", sw.Elapsed);
-                    query.Timeout = (int) options.QueryTimeout.TotalMilliseconds;
+                    query.Timeout = (int)options.QueryTimeout.TotalMilliseconds;
                     query.Limit = options.ResultLimit;
                     ct.ThrowIfCancellationRequested();
 
-                    var weakResult = queryProcessor.ProcessQuery(query);
+                    var weakResult = loadedGraph.QueryProcessor.ProcessQuery(query);
                     // returns either a SparqlResultSet or an IGraph instance
                     if (weakResult is IGraph)
                     {
@@ -131,5 +178,27 @@ namespace GrayWing.Querying
                 }
             }
         }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            loadGraphTaskLock.Dispose();
+        }
+
+        private class LoadedGraph
+        {
+            public readonly LeviathanQueryProcessor QueryProcessor;
+            public readonly IGraph Graph;
+            public readonly InMemoryDataset Dataset;
+
+            public LoadedGraph(LeviathanQueryProcessor queryProcessor, IGraph graph, InMemoryDataset dataset)
+            {
+                QueryProcessor = queryProcessor;
+                Graph = graph;
+                Dataset = dataset;
+            }
+        }
+
     }
 }
+
