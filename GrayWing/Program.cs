@@ -14,7 +14,10 @@ namespace GrayWing
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            CreateWebHostBuilder(args)
+                .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings._private.json"))
+                .Build()
+                .Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

@@ -261,3 +261,5 @@ __pycache__/
 *.pyc
 /GrayWing/Data/wbdump.ttl
 /GrayWing/wwwroot/
+
+*._private*
