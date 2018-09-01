@@ -14,7 +14,7 @@ import { ResultViewerComponent } from './result-viewer/result-viewer.component';
 import { environment } from '../environments/environment';
 import { SparqlService } from './sparql.service';
 import { StatusIndicatorComponent } from './status-indicator/status-indicator.component';
-import { SparqlVariableBindingPipe } from './sparql-variable-binding.pipe';
+import { SparqlVariableBindingViewComponent } from './sparql-variable-binding-view/sparql-variable-binding-view.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +22,7 @@ import { SparqlVariableBindingPipe } from './sparql-variable-binding.pipe';
     CodeEditorComponent,
     ResultViewerComponent,
     StatusIndicatorComponent,
-    SparqlVariableBindingPipe
+    SparqlVariableBindingViewComponent
   ],
   imports: [
     BrowserModule,

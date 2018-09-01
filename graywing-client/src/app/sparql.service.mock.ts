@@ -21,6 +21,7 @@ export class SparqlMockService implements ISparqlService {
       this.currentResult.next(ParseQueryResult(`<sparql xmlns="http://www.w3.org/2005/sparql-results#">
       <head>
         <variable name="cat"/>
+        <variable name="test"/>
       </head>
       <results>
         <result>
@@ -42,7 +43,18 @@ export class SparqlMockService implements ISparqlService {
           <binding name="cat">
             <uri>https://crystalpool.cxuesong.com/entity/Q713</uri>
           </binding>
-        </result></results></sparql>
+        </result>
+        <result>
+          <binding name="cat">
+            <literal>literal</literal>
+          </binding>
+        </result>
+        <result>
+          <binding name="cat">
+            <bnode>blank</bnode>
+          </binding>
+        </result>
+        </results></sparql>
     `));
     };
     window.setTimeout(delayedAction, 1000);
