@@ -1,6 +1,11 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { SparqlService } from '../sparql.service';
+import { Component, OnInit, Inject, Input } from '@angular/core';
 import { ISparqlService, ISparqlServiceInjectionToken } from '../sparql.service.contract';
+
+interface ISetCodeEditorContentMessage
+{
+  type: "SetCodeEditorContent";
+  content: string;
+}
 
 @Component({
   selector: 'app-code-editor',
@@ -18,6 +23,13 @@ SELECT ?cat WHERE {
   public constructor(@Inject(ISparqlServiceInjectionToken) private sparqlService: ISparqlService) { }
 
   public ngOnInit() {
+    window.addEventListener("message", e => {
+      if (!e.data) return;
+      if (e.data.type === "SetCodeEditorContent")
+      {
+        this.codeContent = (<ISetCodeEditorContentMessage>e.data).content;
+      }
+    });
   }
 
   public onExecuteClick() {

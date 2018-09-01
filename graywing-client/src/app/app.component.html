@@ -1,3 +1,16 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <span>Gray Wing</span>
+        <span style="margin:0 4px;">|</span>
+        <button mat-button (click)="onGotoCrystalPoolButtonClicked()" matTooltip="… to see & edit the whole knowledge-base">
+            Go to Crystal Pool
+        </button>
+        <span class="toobar-spacer"></span>
+        <button mat-icon-button (click)="onGotoRepositoryButtonClicked()" matTooltip="Source code on GitHub">
+            <mat-icon>code</mat-icon>
+        </button>
+    </mat-toolbar-row>
+</mat-toolbar>
 <app-code-editor></app-code-editor>
 <br />
 <app-status-indicator></app-status-indicator>
