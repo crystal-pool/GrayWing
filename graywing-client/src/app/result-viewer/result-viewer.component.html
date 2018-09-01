@@ -8,4 +8,4 @@
   <mat-card-actions>
   </mat-card-actions>
 </mat-card>
-<ng-template #variableValueCellTemplate let-row="row" let-value="value">{{value}}</ng-template>
+<ng-template #variableValueCellTemplate let-row="row" let-value="value"><span [innerHtml]="value | sparqlVariableBinding"></span></ng-template>

@@ -14,13 +14,15 @@ import { ResultViewerComponent } from './result-viewer/result-viewer.component';
 import { environment } from '../environments/environment';
 import { SparqlService } from './sparql.service';
 import { StatusIndicatorComponent } from './status-indicator/status-indicator.component';
+import { SparqlVariableBindingPipe } from './sparql-variable-binding.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     CodeEditorComponent,
     ResultViewerComponent,
-    StatusIndicatorComponent
+    StatusIndicatorComponent,
+    SparqlVariableBindingPipe
   ],
   imports: [
     BrowserModule,
