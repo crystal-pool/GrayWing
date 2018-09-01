@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GrayWing.Querying;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -34,6 +35,15 @@ namespace GrayWing
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            var usesReverseProxy = Configuration.GetValue("UseReverseProxy", false);
+            if (usesReverseProxy)
+            {
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                });
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -43,7 +53,10 @@ namespace GrayWing
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            if (!usesReverseProxy)
+            {
+                app.UseHttpsRedirection();
+            }
             app.UseMvc();
             app.UseStaticFiles();
 
