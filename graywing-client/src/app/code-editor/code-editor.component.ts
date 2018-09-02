@@ -1,8 +1,7 @@
 import { Component, OnInit, Inject, Input } from '@angular/core';
 import { ISparqlService, ISparqlServiceInjectionToken } from '../sparql.service.contract';
 
-interface ISetCodeEditorContentMessage
-{
+interface ISetCodeEditorContentMessage {
   type: "SetCodeEditorContent";
   content: string;
 }
@@ -22,11 +21,12 @@ SELECT ?cat WHERE {
 
   public constructor(@Inject(ISparqlServiceInjectionToken) private sparqlService: ISparqlService) { }
 
+  public userConsented: boolean;
+
   public ngOnInit() {
     window.addEventListener("message", e => {
       if (!e.data) return;
-      if (e.data.type === "SetCodeEditorContent")
-      {
+      if (e.data.type === "SetCodeEditorContent") {
         this.codeContent = (<ISetCodeEditorContentMessage>e.data).content;
       }
     });
@@ -34,6 +34,7 @@ SELECT ?cat WHERE {
 
   public onExecuteClick() {
     this.sparqlService.executeQuery(this.codeContent);
+    this.userConsented = true;
   }
 
 }

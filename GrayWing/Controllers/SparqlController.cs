@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using GrayWing.Querying;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -56,18 +58,36 @@ namespace GrayWing.Controllers
                     }
                 }
             }
+            var telemetryClient = new TelemetryClient();
+
             var query = sb.ToString();
             if (string.IsNullOrWhiteSpace(query))
                 return StatusCode(StatusCodes.Status400BadRequest, "Missing query string.");
+            var sw = new Stopwatch();
+            var stageName = "Query";
+            var metrics = new Dictionary<string, double>();
             try
             {
+                sw.Start();
                 var result = await queryService.ExecuteQueryAsync(query, HttpContext.RequestAborted);
+                metrics["QueryMs"] = sw.ElapsedMilliseconds;
+                stageName = "SendToClient";
+                sw.Restart();
                 QueryResultSerializationHelper.SendToClient(HttpContext, result);
+                metrics["SendToClientMs"] = sw.ElapsedMilliseconds;
+                telemetryClient.TrackEvent("QueryEnd", new Dictionary<string, string> {{"Query", query}}, metrics);
                 return new EmptyResult();
             }
             catch (Exception ex)
             {
                 // TODO we should distinguish between syntax error & query execution failure.
+                telemetryClient.TrackException(ex,
+                    new Dictionary<string, string>
+                    {
+                        {"Query", query},
+                        {"Stage", stageName},
+                        {"StageMs", sw.ElapsedMilliseconds.ToString()}
+                    }, metrics);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
