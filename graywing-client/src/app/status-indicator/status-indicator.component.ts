@@ -1,11 +1,11 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
-import { ISparqlServiceInjectionToken, ISparqlService } from '../sparql.service.contract';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, Inject, OnDestroy } from "@angular/core";
+import { ISparqlServiceInjectionToken, ISparqlService } from "../sparql.service.contract";
+import { Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-status-indicator',
-  templateUrl: './status-indicator.component.html',
-  styleUrls: ['./status-indicator.component.css']
+  selector: "app-status-indicator",
+  templateUrl: "./status-indicator.component.html",
+  styleUrls: ["./status-indicator.component.css"]
 })
 export class StatusIndicatorComponent implements OnInit, OnDestroy {
 
@@ -40,14 +40,14 @@ export class StatusIndicatorComponent implements OnInit, OnDestroy {
           default:
             this.isBusy = false;
             this.statusLabel = "Ready.";
-            this.statusMessage = 'Enter your SPARQL query above; then click "Execute" to ask about the what we have in store.';
+            this.statusMessage = "Enter your SPARQL query above; then click \"Execute\" to ask about the what we have in store.";
             break;
         }
         if (status.message) {
           this.statusMessage = status.message;
         }
       }
-    )
+    );
   }
 
   ngOnDestroy(): void {

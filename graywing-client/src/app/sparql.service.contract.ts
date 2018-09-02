@@ -1,6 +1,6 @@
-import { SparqlQueryResult, SparqlQueryRecord, SparqlUri, SparqlLiteral, SparqlBlankNode, SparqlVariableBindingValue } from './sparql-models';
-import { Observable } from 'rxjs';
-import { InjectionToken } from '@angular/core';
+import { SparqlQueryResult, SparqlQueryRecord, SparqlUri, SparqlLiteral, SparqlBlankNode, SparqlVariableBindingValue } from "./sparql-models";
+import { Observable } from "rxjs";
+import { InjectionToken } from "@angular/core";
 
 export interface ISparqlQueryStatus {
     // undefined indicates the user hasn't executed any query yet.
@@ -18,7 +18,7 @@ export interface ISparqlService {
 
 }
 
-export const ISparqlServiceInjectionToken = new InjectionToken<ISparqlService>('DI.ISparqlService');
+export const ISparqlServiceInjectionToken = new InjectionToken<ISparqlService>("DI.ISparqlService");
 
 export const SparqlResultsNamespace = "http://www.w3.org/2005/sparql-results#";
 
@@ -31,7 +31,7 @@ export function ParseQueryResult(rawResult: string): SparqlQueryResult {
     const root = doc.documentElement;
     const nsResolver: XPathNSResolver = {
         lookupNamespaceURI: prefix => {
-            if (prefix === "r") return SparqlResultsNamespace;
+            if (prefix === "r") { return SparqlResultsNamespace; }
             return null;
         }
     };
@@ -54,11 +54,11 @@ export function ParseQueryResult(rawResult: string): SparqlQueryResult {
     }
     result.records = evaluateXPathAndMap(doc, "/r:sparql/r:results/r:result", root, nsResolver,
         node => {
-            let bindings: { [key: string]: SparqlVariableBindingValue } = {};
+            const bindings: { [key: string]: SparqlVariableBindingValue } = {};
             for (let i = 0; i < node.childNodes.length; i++) {
                 const bnode = node.childNodes[i];
-                if (bnode.nodeType !== Node.ELEMENT_NODE) continue;
-                if (bnode.localName !== "binding") continue;
+                if (bnode.nodeType !== Node.ELEMENT_NODE) { continue; }
+                if (bnode.localName !== "binding") { continue; }
                 // <binding name="variable_name">
                 const belement = bnode as Element;
                 const name = belement.getAttribute("name");
@@ -98,7 +98,7 @@ function evaluateXPathAndMap<T>(doc: Document, expression: string, contextNode: 
 
 function mapXPathResult<T>(result: XPathResult, selector: (node: Node, index: Number) => T): T[] {
     let node: Node;
-    let mapped: T[] = [];
+    const mapped: T[] = [];
     while (node = result.iterateNext()) {
         mapped.push(selector(node, mapped.length));
     }

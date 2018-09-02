@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { SparqlVariableBindingViewComponent } from './sparql-variable-binding-view.component';
+import { SparqlVariableBindingViewComponent } from "./sparql-variable-binding-view.component";
 
-describe('SparqlVariableBindingViewComponent', () => {
+describe("SparqlVariableBindingViewComponent", () => {
   let component: SparqlVariableBindingViewComponent;
   let fixture: ComponentFixture<SparqlVariableBindingViewComponent>;
 
@@ -19,7 +19,7 @@ describe('SparqlVariableBindingViewComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

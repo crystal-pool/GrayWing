@@ -1,13 +1,13 @@
-import { Component, OnInit, Input, Inject, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
-import { TableColumn } from '@swimlane/ngx-datatable';
-import { SparqlQueryResult } from '../sparql-models';
-import { ISparqlServiceInjectionToken, ISparqlService } from '../sparql.service.contract';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, Input, Inject, OnDestroy, ViewChild, TemplateRef } from "@angular/core";
+import { TableColumn } from "@swimlane/ngx-datatable";
+import { SparqlQueryResult } from "../sparql-models";
+import { ISparqlServiceInjectionToken, ISparqlService } from "../sparql.service.contract";
+import { Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-result-viewer',
-  templateUrl: './result-viewer.component.html',
-  styleUrls: ['./result-viewer.component.css']
+  selector: "app-result-viewer",
+  templateUrl: "./result-viewer.component.html",
+  styleUrls: ["./result-viewer.component.css"]
 })
 export class ResultViewerComponent implements OnInit, OnDestroy {
 
@@ -16,7 +16,7 @@ export class ResultViewerComponent implements OnInit, OnDestroy {
 
   public constructor(@Inject(ISparqlServiceInjectionToken) private sparqlService: ISparqlService) { }
 
-  @ViewChild('variableValueCellTemplate') public variableValueCellTemplate: TemplateRef<any>;
+  @ViewChild("variableValueCellTemplate") public variableValueCellTemplate: TemplateRef<any>;
 
   public rows: any[];
 
@@ -33,7 +33,7 @@ export class ResultViewerComponent implements OnInit, OnDestroy {
     } else {
       this.columns = value.variables.map((varName): TableColumn => {
         return { name: varName, prop: "bindings." + varName, cellTemplate: this.variableValueCellTemplate };
-      })
+      });
       this.rows = value.records;
     }
   }

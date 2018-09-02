@@ -7,7 +7,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "lint-fix": "tslint --fix ./src/**/*.ts -t verbose"
   },
   "private": true,
   "dependencies": {

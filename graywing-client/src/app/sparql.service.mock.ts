@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
-import { SparqlQueryResult } from './sparql-models';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { ISparqlService, ParseQueryResult, ISparqlQueryStatus } from './sparql.service.contract';
-import { delay } from 'rxjs/operators';
+import { Injectable } from "@angular/core";
+import { SparqlQueryResult } from "./sparql-models";
+import { BehaviorSubject, Observable } from "rxjs";
+import { HttpClient } from "@angular/common/http";
+import { ISparqlService, ParseQueryResult, ISparqlQueryStatus } from "./sparql.service.contract";
+import { delay } from "rxjs/operators";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class SparqlMockService implements ISparqlService {
 
@@ -16,7 +16,7 @@ export class SparqlMockService implements ISparqlService {
   public readonly currentStatus: BehaviorSubject<ISparqlQueryStatus> = new BehaviorSubject<ISparqlQueryStatus>({});
 
   public executeQuery(queryExpr: string) {
-    let delayedAction = () => {
+    const delayedAction = () => {
       this.currentStatus.next({ status: "successful" });
       this.currentResult.next(ParseQueryResult(`<sparql xmlns="http://www.w3.org/2005/sparql-results#">
       <head>

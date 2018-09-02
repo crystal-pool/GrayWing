@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { StatusIndicatorComponent } from './status-indicator.component';
+import { StatusIndicatorComponent } from "./status-indicator.component";
 
-describe('StatusIndicatorComponent', () => {
+describe("StatusIndicatorComponent", () => {
   let component: StatusIndicatorComponent;
   let fixture: ComponentFixture<StatusIndicatorComponent>;
 
@@ -19,7 +19,7 @@ describe('StatusIndicatorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

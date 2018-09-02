@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { SparqlVariableBindingValue, SparqlUri, SparqlBlankNode } from '../sparql-models';
+import { Component, OnInit, Input } from "@angular/core";
+import { SparqlVariableBindingValue, SparqlUri, SparqlBlankNode } from "../sparql-models";
 
 const wellKnownUriPrefixes: { [prefix: string]: string } = {
   "wd": "https://crystalpool.cxuesong.com/entity/",
@@ -9,9 +9,9 @@ const wellKnownUriPrefixes: { [prefix: string]: string } = {
 };
 
 @Component({
-  selector: 'app-sparql-variable-binding-view',
-  templateUrl: './sparql-variable-binding-view.component.html',
-  styleUrls: ['./sparql-variable-binding-view.component.css']
+  selector: "app-sparql-variable-binding-view",
+  templateUrl: "./sparql-variable-binding-view.component.html",
+  styleUrls: ["./sparql-variable-binding-view.component.css"]
 })
 export class SparqlVariableBindingViewComponent implements OnInit {
 
@@ -31,7 +31,7 @@ export class SparqlVariableBindingViewComponent implements OnInit {
       this.linkTarget = uri;
       this.label = uri;
       for (const prefix in wellKnownUriPrefixes) {
-        if (!wellKnownUriPrefixes.hasOwnProperty(prefix)) continue;
+        if (!wellKnownUriPrefixes.hasOwnProperty(prefix)) { continue; }
         const puri = wellKnownUriPrefixes[prefix];
         if (uri.startsWith(puri)) {
           this.label = prefix + ":" + uri.substr(puri.length);

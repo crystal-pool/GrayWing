@@ -29,7 +29,10 @@
     "label-position": true,
     "max-line-length": [
       true,
-      140
+      {
+        "limit": 140,
+        "ignore-pattern": "^import\\s"
+      }
     ],
     "member-access": false,
     "member-ordering": [
@@ -85,7 +88,7 @@
     "prefer-const": true,
     "quotemark": [
       true,
-      "single"
+      "double"
     ],
     "radix": true,
     "semicolon": [

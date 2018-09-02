@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { SparqlQueryResult } from './sparql-models';
-import { BehaviorSubject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { ISparqlService, ParseQueryResult, ISparqlQueryStatus } from './sparql.service.contract';
+import { Injectable } from "@angular/core";
+import { SparqlQueryResult } from "./sparql-models";
+import { BehaviorSubject } from "rxjs";
+import { HttpClient } from "@angular/common/http";
+import { ISparqlService, ParseQueryResult, ISparqlQueryStatus } from "./sparql.service.contract";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class SparqlService implements ISparqlService {
 
