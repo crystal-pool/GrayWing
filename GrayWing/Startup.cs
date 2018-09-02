@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GrayWing.Querying;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -27,7 +29,14 @@ namespace GrayWing
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var aiStorageFolder = Configuration.GetValue<string>("ApplicationInsightsStorageFolder", null);
+            if (aiStorageFolder != null)
+            {
+                // For Linux OS
+                services.AddSingleton<ITelemetryChannel>(new ServerTelemetryChannel {StorageFolder = aiStorageFolder});
+            }
             services.AddApplicationInsightsTelemetry(Configuration);
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.Configure<RdfQueryServiceOptions>(Configuration.GetSection("RdfQueryService"));
             services.AddSingleton<RdfQueryService>();

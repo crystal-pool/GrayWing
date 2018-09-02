@@ -50,7 +50,8 @@ SELECT ?cat ?name ?gender WHERE {
      "UseReverseProxy": true,		// Whether the site is behind a reverse proxy. Set to true to prevent unnecessary redirects.
      "ApplicationInsights": {
        "InstrumentationKey": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"	// AI instrumentation key.
-     }
+     },
+     "ApplicationInsightsStorageFolder": "/tmp/aistorage"	// AI storage folder on non-Windows OS
    }
    ```
 
