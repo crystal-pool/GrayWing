@@ -14,7 +14,7 @@ If you are new to this, note that Crystal Pool uses Wikibase, the same MediaWiki
 
 * [About *Crystal Pool*](https://crystalpool.cxuesong.com/wiki/Special:MyLanguage/Crystal_Pool:About)
 
-## SPARQL Query Examples
+## SPARQL query examples
 
 The following query will show you all the cats who belongs or used to belong to [ThunderClan](https://crystalpool.cxuesong.com/wiki/Item:Q627), as well as their English labels (aka. names) and genders.
 
@@ -32,3 +32,32 @@ SELECT ?cat ?name ?gender WHERE {
 }
 ```
 
+## Build & deploy
+
+1. `git clone` the whole repository
+
+2. Navigate to `graywing-client` directory. Ensure you have installed npm & Angular CLI. Use the following command to restore the packages and build the client site webpages
+
+   ```powershell
+   npm install
+   ng build --prod
+   ```
+
+3. Navigate to `GrayWing` project directory. Configure the configurations. You need to create a `appsettings._private.json` file, with the following content
+
+   ```json
+   {
+     "UseReverseProxy": true,		// Whether the site is behind a reverse proxy. Set to true to prevent unnecessary redirects.
+     "ApplicationInsights": {
+       "InstrumentationKey": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"	// AI instrumentation key.
+     }
+   }
+   ```
+
+4. Build / publish the project using
+
+   ```powershell
+   dotnet build -c Release
+   # or
+   dotnet publish -c Release
+   ```
