@@ -4,10 +4,13 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
+    <ApplicationInsightsResourceId>/subscriptions/7d72b759-151b-4bca-86a7-d733dd90d1a9/resourcegroups/crystal-pool/providers/microsoft.insights/components/GrayWing</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/7d72b759-151b-4bca-86a7-d733dd90d1a9/resourcegroups/crystal-pool/providers/microsoft.insights/components/GrayWing</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="dotNetRDF" Version="2.1.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
@@ -15,6 +18,10 @@
     <None Update="Data\wbdump.ttl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 </Project>
