@@ -91,7 +91,8 @@ function evaluateXPathAndTakeFirst(doc: Document, expression: string, contextNod
     return iterator.singleNodeValue;
 }
 
-function evaluateXPathAndMap<T>(doc: Document, expression: string, contextNode: Node, resolver: XPathNSResolver, selector: (node: Node, index: Number) => T): T[] {
+function evaluateXPathAndMap<T>(doc: Document, expression: string, contextNode: Node, resolver: XPathNSResolver,
+    selector: (node: Node, index: Number) => T): T[] {
     const iterator = doc.evaluate(expression, contextNode, resolver, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
     return mapXPathResult(iterator, selector);
 }

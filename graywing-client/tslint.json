@@ -34,7 +34,7 @@
         "ignore-pattern": "^import\\s"
       }
     ],
-    "member-access": false,
+    "member-access": true,
     "member-ordering": [
       true,
       {

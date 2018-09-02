@@ -13,13 +13,13 @@ export class StatusIndicatorComponent implements OnInit, OnDestroy {
 
   constructor(@Inject(ISparqlServiceInjectionToken) private sparqlService: ISparqlService) { }
 
-  statusLabel: string;
+  public statusLabel: string;
 
-  statusMessage: string;
+  public statusMessage: string;
 
-  isBusy: boolean;
+  public isBusy: boolean;
 
-  ngOnInit() {
+  public ngOnInit() {
     this.queryStatusSubscription = this.sparqlService.currentStatus.subscribe(
       status => {
         switch (status.status) {
@@ -50,7 +50,7 @@ export class StatusIndicatorComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.queryStatusSubscription.unsubscribe();
   }
 

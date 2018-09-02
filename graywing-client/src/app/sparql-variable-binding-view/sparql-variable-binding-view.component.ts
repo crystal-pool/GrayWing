@@ -53,7 +53,7 @@ export class SparqlVariableBindingViewComponent implements OnInit {
 
   public annotation: string;
 
-  ngOnInit() {
+  public ngOnInit() {
   }
 
 }

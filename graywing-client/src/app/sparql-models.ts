@@ -1,6 +1,6 @@
 export class SparqlQueryResult {
 
-    static readonly Empty: SparqlQueryResult = new SparqlQueryResult();
+    public static readonly Empty: SparqlQueryResult = new SparqlQueryResult();
 
     public variables: string[];
 

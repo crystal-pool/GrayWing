@@ -6,7 +6,7 @@ import { Component } from "@angular/core";
   styleUrls: ["./app.component.css"]
 })
 export class AppComponent {
-  title = "Gray Wing Client";
+  public title = "Gray Wing Client";
 
   public onGotoCrystalPoolButtonClicked() {
     window.open("https://crystalpool.cxuesong.com/", "_blank");
