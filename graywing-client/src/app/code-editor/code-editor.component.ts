@@ -1,10 +1,6 @@
 import { Component, OnInit, Inject, Input } from "@angular/core";
 import { ISparqlService, ISparqlServiceInjectionToken } from "../sparql.service.contract";
-
-interface ISetCodeEditorContentMessage {
-  type: "SetCodeEditorContent";
-  content: string;
-}
+import { ISetCodeEditorContentMessage } from "../window-messages";
 
 @Component({
   selector: "app-code-editor",
