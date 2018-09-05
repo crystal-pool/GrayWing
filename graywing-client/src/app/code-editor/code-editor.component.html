@@ -3,9 +3,7 @@
     <mat-card-title>Query</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <mat-form-field class="query-textfield">
-      <textarea matInput placeholder="Enter your SPARQL query here." rows="10" class="query-textarea" [(ngModel)]="codeContent"></textarea>
-    </mat-form-field>
+    <monaco-editor #codeEditor [file]="codeFile" (fileChange)="onCodeFileChanged($event)"></monaco-editor>
   </mat-card-content>
   <mat-card-actions>
     <button mat-button type="submit" (click)="onExecuteClick()">Execute</button>

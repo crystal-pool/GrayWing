@@ -2,11 +2,12 @@ import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
 
 import { AppComponent } from "./app.component";
-import { MaterialRefModule } from "./material-ref/material-ref.module";
 import { HttpClientModule } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { NgxDatatableModule } from "@swimlane/ngx-datatable";
+import { MonacoEditorModule } from "ngx-monaco";
 
+import { MaterialRefModule } from "./material-ref/material-ref.module";
 import { ISparqlServiceInjectionToken } from "./sparql.service.contract";
 import { CodeEditorComponent } from "./code-editor/code-editor.component";
 import { SparqlMockService } from "./sparql.service.mock";
@@ -29,7 +30,8 @@ import { SparqlVariableBindingViewComponent } from "./sparql-variable-binding-vi
     FormsModule,
     MaterialRefModule,
     NgxDatatableModule,
-    HttpClientModule
+    HttpClientModule,
+    MonacoEditorModule.forRoot()
   ],
   providers: [{ provide: ISparqlServiceInjectionToken, useClass: environment.production ? SparqlService : SparqlMockService }],
   bootstrap: [AppComponent]

@@ -16,6 +16,7 @@ export class SparqlMockService implements ISparqlService {
   public readonly currentStatus: BehaviorSubject<ISparqlQueryStatus> = new BehaviorSubject<ISparqlQueryStatus>({});
 
   public executeQuery(queryExpr: string) {
+    console.log("Query expression:", queryExpr);
     const delayedAction = () => {
       this.currentStatus.next({ status: "successful" });
       this.currentResult.next(ParseQueryResult(`<sparql xmlns="http://www.w3.org/2005/sparql-results#">
