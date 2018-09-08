@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject, Input, ViewChild, OnDestroy } from "@angular/core";
 import { ISparqlService, ISparqlServiceInjectionToken } from "../sparql.service.contract";
 import { ISetCodeEditorContentMessage } from "../window-messages";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-code-editor",
@@ -11,9 +12,13 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
 
   public static readonly MaxAllowedBrowserHashLength = 8000;
 
+  private subscriptions: Subscription[] = [];
+
   public constructor(@Inject(ISparqlServiceInjectionToken) private sparqlService: ISparqlService) { }
 
-  public userConsented: boolean;
+  public userConsented = false;
+
+  public isBusy = false;
 
   public editorOptions = {
     language: "sparql"
@@ -51,6 +56,9 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
   public ngOnInit() {
     window.addEventListener("message", this.onMessage);
     window.addEventListener("hashchange", this.onHashChange);
+    this.subscriptions.push(this.sparqlService.currentStatus.subscribe(next => {
+      this.isBusy = next.status === "busy";
+    }));
   }
 
   public ngOnDestroy(): void {

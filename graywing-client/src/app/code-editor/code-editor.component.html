@@ -6,7 +6,7 @@
     <ngx-monaco-editor #codeEditor class="code-editor" [options]="editorOptions" [(ngModel)]="codeContent"></ngx-monaco-editor>
   </mat-card-content>
   <mat-card-actions>
-    <button mat-button type="submit" (click)="onExecuteClick()">Execute</button>
+    <button mat-button type="submit" [disabled]="isBusy" (click)="onExecuteClick()">Execute</button>
     <div class="mat-caption" style="float: right; height: auto;">
       <span>Press F1 in editor for command palatte.</span>
       <span *ngIf="!userConsented"> | By clicking "Execute", you acknownledge &amp; consent
