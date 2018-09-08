@@ -59,6 +59,8 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.sparqlService.currentStatus.subscribe(next => {
       this.isBusy = next.status === "busy";
     }));
+    // Do initial load.
+    this.loadCodeContentFromHash();
   }
 
   public ngOnDestroy(): void {
