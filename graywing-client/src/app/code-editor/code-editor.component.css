@@ -6,7 +6,7 @@
     font-family: Consolas, 'Courier New', Courier, monospace
 }
 
-monaco-editor {
-    height: 400px;
-    display:block;
+.code-editor {
+    height: calc(100vh - 20em);
+    min-height: 10em;
 }

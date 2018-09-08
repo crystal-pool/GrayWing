@@ -3,12 +3,15 @@
     <mat-card-title>Query</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <monaco-editor #codeEditor [file]="codeFile" (fileChange)="onCodeFileChanged($event)"></monaco-editor>
+    <ngx-monaco-editor #codeEditor class="code-editor" [options]="editorOptions" [(ngModel)]="codeContent"></ngx-monaco-editor>
   </mat-card-content>
   <mat-card-actions>
     <button mat-button type="submit" (click)="onExecuteClick()">Execute</button>
-    <div *ngIf="!userConsented" class="mat-caption" style="float: right; height: auto;">By clicking "Execute", you acknownledge &amp; consent
-      your query expression entered above will be recorded and preserved for up to 90 days in order to improve the query service.</div>
+    <div class="mat-caption" style="float: right; height: auto;">
+      <span>Press F1 in editor for command palatte.</span>
+      <span *ngIf="!userConsented"> | By clicking "Execute", you acknownledge &amp; consent
+        your query expression entered above will be recorded and preserved for up to 90 days
+        in order to improve the query service.</span></div>
     <div style="clear: both;"></div>
   </mat-card-actions>
 </mat-card>

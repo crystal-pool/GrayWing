@@ -5,7 +5,7 @@ import { AppComponent } from "./app.component";
 import { HttpClientModule } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { NgxDatatableModule } from "@swimlane/ngx-datatable";
-import { MonacoEditorModule } from "ngx-monaco";
+import { MonacoEditorModule } from "ngx-monaco-editor";
 
 import { MaterialRefModule } from "./material-ref/material-ref.module";
 import { ISparqlServiceInjectionToken } from "./sparql.service.contract";
