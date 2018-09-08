@@ -12,7 +12,7 @@ export class SparqlMockService implements ISparqlService {
 
   constructor(private http: HttpClient) { }
 
-  public readonly currentResult: BehaviorSubject<SparqlQueryResult> = new BehaviorSubject<SparqlQueryResult>(null);
+  public readonly currentResult: BehaviorSubject<SparqlQueryResult> = new BehaviorSubject<SparqlQueryResult>(SparqlQueryResult.Empty);
   public readonly currentStatus: BehaviorSubject<ISparqlQueryStatus> = new BehaviorSubject<ISparqlQueryStatus>({});
 
   public executeQuery(queryExpr: string) {
