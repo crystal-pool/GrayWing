@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GrayWing.Querying;
+using GrayWing.Telemetry;
 using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,6 +37,7 @@ namespace GrayWing
                 // For Linux OS
                 services.AddSingleton<ITelemetryChannel>(new ServerTelemetryChannel {StorageFolder = aiStorageFolder});
             }
+            services.AddSingleton<ITelemetryInitializer, MyTelemetryInitializer>();
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -67,8 +70,10 @@ namespace GrayWing
             {
                 app.UseHttpsRedirection();
             }
-            app.UseMvc();
+
             app.UseStaticFiles();
+            app.UseCookiePolicy();
+            app.UseMvc();
 
         }
     }
