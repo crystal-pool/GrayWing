@@ -52,12 +52,12 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  public onGotoCrystalPoolButtonClicked() {
-    window.open("https://crystalpool.cxuesong.com/", "_blank");
+  public onGotoCrystalPoolButtonClicked(path: string = "") {
+    window.open("https://crystalpool.cxuesong.com/" + path, "_blank");
   }
 
-  public onGotoRepositoryButtonClicked() {
-    window.open("https://github.com/crystal-pool/GrayWing", "_blank");
+  public onGotoRepositoryButtonClicked(path: string = "") {
+    window.open("https://github.com/crystal-pool/GrayWing/" + path, "_blank");
   }
 
 }

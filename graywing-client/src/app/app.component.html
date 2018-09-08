@@ -6,8 +6,19 @@
             Go to Crystal Pool
         </button>
         <span class="toobar-spacer"></span>
-        <button mat-icon-button (click)="onGotoRepositoryButtonClicked()" matTooltip="Source code on GitHub">
-            <mat-icon>code</mat-icon>
+        <mat-menu #moreMenu="matMenu">
+            <button mat-menu-item (click)="onGotoRepositoryButtonClicked()">Star this project on GitHub!</button>
+            <button mat-menu-item (click)="onGotoRepositoryButtonClicked('issues')">Issues &amp; feature requests</button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="onGotoCrystalPoolButtonClicked('Special:MyLanguage/Project:SPARQL_query_service')">
+                About SPARQL Query Service
+            </button>
+            <button mat-menu-item (click)="onGotoCrystalPoolButtonClicked('Special:MyLanguage/Project:About')">
+                About Crystal Pool
+            </button>
+        </mat-menu>
+        <button mat-icon-button matTooltip="More…" [matMenuTriggerFor]="moreMenu">
+            <mat-icon>more</mat-icon>
         </button>
     </mat-toolbar-row>
 </mat-toolbar>
