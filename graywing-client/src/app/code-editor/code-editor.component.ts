@@ -61,11 +61,13 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
   public onExecuteClick() {
     // Change hash first, then execute the query; because it will change the document title.
     // We want something clear in user's nagviation history.
+    this.isHashBasedCodeContentSuppressed = true;
     if (this.codeContent.length <= CodeEditorComponent.MaxAllowedBrowserHashLength) {
-      this.isHashBasedCodeContentSuppressed = true;
       location.hash = this.codeContent;
-      this.isHashBasedCodeContentSuppressed = false;
+    } else {
+      location.hash = "";
     }
+    this.isHashBasedCodeContentSuppressed = false;
     this.sparqlService.executeQuery(this.codeContent);
     this.userConsented = true;
   }
