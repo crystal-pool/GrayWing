@@ -19,8 +19,8 @@ export class SparqlService implements ISparqlService {
     this.http.post("/sparql", queryExpr, { headers: { "Content-Type": "text/plain; charset=UTF-8" }, responseType: "text" }).subscribe(
       value => {
         try {
-          this.currentResult.next(ParseQueryResult(value));
           this.currentStatus.next({ status: "successful" });
+          this.currentResult.next(ParseQueryResult(value));
         } catch (error) {
           this.currentStatus.next({ status: "failed", message: error.toString() });
         }

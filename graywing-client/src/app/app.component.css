@@ -1,7 +1,25 @@
 .toobar-spacer {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 
 .toolbar-button {
-    margin: 0 4px;
+  margin: 0 4px;
+}
+
+.responsive-slim {
+  display: none;
+}
+
+.responsive-wide {
+  display: unset;
+}
+
+@media only screen and (max-width: 500px) {
+  .responsive-slim {
+    display: unset;
+  }
+
+  .responsive-wide {
+    display: none;
+  }
 }

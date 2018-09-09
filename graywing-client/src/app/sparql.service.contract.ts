@@ -10,8 +10,15 @@ export interface ISparqlQueryStatus {
 
 export interface ISparqlService {
 
+    /**
+     * The observable that emits the SPARQL query result.
+     */
     readonly currentResult: Observable<SparqlQueryResult>;
 
+    /**
+     * The observable that emits the current query status.
+     * This observable always emits the next item BEFORE {@link #currentResult}.
+     */
     readonly currentStatus: Observable<ISparqlQueryStatus>;
 
     executeQuery(queryExpr: string);

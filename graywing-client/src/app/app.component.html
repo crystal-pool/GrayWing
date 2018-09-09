@@ -1,26 +1,32 @@
 <mat-toolbar color="primary">
-    <mat-toolbar-row>
-        <span>Crystla Pool Query Service</span>
-        <span style="margin:0 4px;">|</span>
-        <button mat-button (click)="onGotoCrystalPoolButtonClicked()" matTooltip="… to see & edit the whole knowledge-base">
-            Go to Crystal Pool
-        </button>
-        <span class="toobar-spacer"></span>
-        <mat-menu #moreMenu="matMenu">
-            <button mat-menu-item (click)="onGotoRepositoryButtonClicked()">Star this project on GitHub!</button>
-            <button mat-menu-item (click)="onGotoRepositoryButtonClicked('issues')">Issues &amp; feature requests</button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item (click)="onGotoCrystalPoolButtonClicked('wiki/Special:MyLanguage/Project:SPARQL_query_service')">
-                About SPARQL Query Service
-            </button>
-            <button mat-menu-item (click)="onGotoCrystalPoolButtonClicked('wiki/Special:MyLanguage/Project:About')">
-                About Crystal Pool
-            </button>
-        </mat-menu>
-        <button mat-icon-button matTooltip="More…" [matMenuTriggerFor]="moreMenu">
-            <mat-icon>more</mat-icon>
-        </button>
-    </mat-toolbar-row>
+  <mat-toolbar-row>
+    <span>Crystal Pool Query Service</span>
+    <span class="responsive-wide" style="margin:0 4px;">
+      <span>|</span>
+      <button mat-button (click)="onGotoCrystalPoolButtonClicked()" matTooltip="… to see & edit the whole knowledge-base">
+        Go to Crystal Pool
+      </button>
+    </span>
+    <span class="toobar-spacer"></span>
+    <mat-menu #moreMenu="matMenu">
+      <div class="responsive-slim">
+        <button mat-menu-item (click)="onGotoCrystalPoolButtonClicked()">Go to Crystal Pool</button>
+        <mat-divider></mat-divider>
+      </div>
+      <button mat-menu-item (click)="onGotoRepositoryButtonClicked()">Star this project on GitHub!</button>
+      <button mat-menu-item (click)="onGotoRepositoryButtonClicked('issues')">Issues &amp; feature requests</button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="onGotoCrystalPoolButtonClicked('wiki/Special:MyLanguage/Project:SPARQL_query_service')">
+        About SPARQL Query Service
+      </button>
+      <button mat-menu-item (click)="onGotoCrystalPoolButtonClicked('wiki/Special:MyLanguage/Project:About')">
+        About Crystal Pool
+      </button>
+    </mat-menu>
+    <button mat-icon-button matTooltip="More…" [matMenuTriggerFor]="moreMenu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+  </mat-toolbar-row>
 </mat-toolbar>
 <app-code-editor></app-code-editor>
 <br />
