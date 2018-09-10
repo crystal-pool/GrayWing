@@ -4,10 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Net.Http.Headers;
 
 namespace GrayWing.Telemetry
 {
@@ -42,6 +41,7 @@ namespace GrayWing.Telemetry
             }
             telemetry.Context.User.Id = tracking.UserId;
             telemetry.Context.Session.Id = tracking.SessionId;
+            telemetry.Context.User.UserAgent = context.Request.Headers[HeaderNames.UserAgent];
         }
 
         private sealed class TelemetryTrackingFeature
