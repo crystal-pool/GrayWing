@@ -73,7 +73,8 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
     // We want something clear in user's nagviation history.
     this.isHashBasedCodeContentSuppressed = true;
     if (this.codeContent.length <= CodeEditorComponent.MaxAllowedBrowserHashLength) {
-      location.hash = this.codeContent;
+      // We need to put a # explicitly, in case codeContent starts with #.
+      location.hash = "#" + this.codeContent;
     } else {
       location.hash = "";
     }
