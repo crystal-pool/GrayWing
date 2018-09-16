@@ -19,6 +19,10 @@ import { SparqlVariableBindingViewComponent } from "./sparql-variable-binding-vi
 
 import * as SparqlLanguage from "./sparql-language";
 
+export function onMonacoLoad() {
+  SparqlLanguage.register();
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,11 +37,7 @@ import * as SparqlLanguage from "./sparql-language";
     MaterialRefModule,
     NgxDatatableModule,
     HttpClientModule,
-    MonacoEditorModule.forRoot({
-      onMonacoLoad: () => {
-        SparqlLanguage.register();
-      }
-    })
+    MonacoEditorModule.forRoot({ onMonacoLoad: onMonacoLoad })
   ],
   providers: [{ provide: ISparqlServiceInjectionToken, useClass: environment.production ? SparqlService : SparqlMockService }],
   bootstrap: [AppComponent]
