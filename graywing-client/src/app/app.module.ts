@@ -17,6 +17,8 @@ import { SparqlService } from "./sparql.service";
 import { StatusIndicatorComponent } from "./status-indicator/status-indicator.component";
 import { SparqlVariableBindingViewComponent } from "./sparql-variable-binding-view/sparql-variable-binding-view.component";
 
+import * as SparqlLanguage from "./sparql-language";
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -31,7 +33,11 @@ import { SparqlVariableBindingViewComponent } from "./sparql-variable-binding-vi
     MaterialRefModule,
     NgxDatatableModule,
     HttpClientModule,
-    MonacoEditorModule.forRoot()
+    MonacoEditorModule.forRoot({
+      onMonacoLoad: () => {
+        SparqlLanguage.register();
+      }
+    })
   ],
   providers: [{ provide: ISparqlServiceInjectionToken, useClass: environment.production ? SparqlService : SparqlMockService }],
   bootstrap: [AppComponent]

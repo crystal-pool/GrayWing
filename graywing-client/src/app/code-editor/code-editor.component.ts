@@ -21,14 +21,15 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
   public isBusy = false;
 
   public editorOptions = {
-    language: "sparql"
+    language: "sparql",
+    tabSize: 4
   };
 
   public codeContent = `# Enter your SPARQL query here.
-  SELECT ?cat WHERE {
-    ?cat    wdt:P3      wd:Q622;       # should be fictional cat character
-            wdt:P76     wd:Q627.       # should belong to ThunderClan
-  }`;
+SELECT ?cat WHERE {
+  ?cat    wdt:P3      wd:Q622;       # should be fictional cat character
+          wdt:P76     wd:Q627.       # should belong to ThunderClan
+}`;
 
   private isHashBasedCodeContentSuppressed = false;
 
