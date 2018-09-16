@@ -11,7 +11,7 @@ ng build --prod
 
 # Build the server app
 cd ../GrayWing/
-dotnet publish -c Production
+dotnet publish -c Release
 
 # Start app
 cd bin/Release/netcoreapp2.1/publish
