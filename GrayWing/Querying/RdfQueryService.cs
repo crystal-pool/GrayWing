@@ -153,7 +153,14 @@ namespace GrayWing.Querying
                 try
                 {
                     logger.LogInformation("Start execute query; ExprLength={ExprLength}.", expr.Length);
-                    var queryStr = new SparqlParameterizedString(expr) { Namespaces = loadedGraph.Graph.NamespaceMap };
+                    var queryStr = new SparqlParameterizedString(expr);
+                    foreach (var prefix in loadedGraph.Graph.NamespaceMap.Prefixes)
+                    {
+                        if (!queryStr.Namespaces.HasNamespace(prefix))
+                        {
+                            queryStr.Namespaces.AddNamespace(prefix, loadedGraph.Graph.NamespaceMap.GetNamespaceUri(prefix));
+                        }
+                    }
                     var query = queryParser.ParseFromString(queryStr);
                     logger.LogDebug("Parsed query. Elapsed time: {Elapsed}.", sw.Elapsed);
                     query.Timeout = (int)options.QueryTimeout.TotalMilliseconds;
