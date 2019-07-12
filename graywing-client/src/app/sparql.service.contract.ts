@@ -63,7 +63,8 @@ export function ParseQueryResult(rawResult: string): SparqlQueryResult {
         node => {
             const bindings: { [key: string]: SparqlVariableBindingValue } = {};
             for (let i = 0; i < node.childNodes.length; i++) {
-                const bnode = node.childNodes[i];
+                const bnode = node.childNodes[i] as Element;
+                console.assert(bnode instanceof Element);
                 if (bnode.nodeType !== Node.ELEMENT_NODE) { continue; }
                 if (bnode.localName !== "binding") { continue; }
                 // <binding name="variable_name">

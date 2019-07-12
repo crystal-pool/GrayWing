@@ -16,7 +16,8 @@ export class ResultViewerComponent implements OnInit, OnDestroy {
 
   public constructor(@Inject(ISparqlServiceInjectionToken) private sparqlService: ISparqlService) { }
 
-  @ViewChild("variableValueCellTemplate") public variableValueCellTemplate: TemplateRef<any>;
+  @ViewChild("variableValueCellTemplate", { static: false })
+  public variableValueCellTemplate: TemplateRef<any>;
 
   public rows: any[];
 
