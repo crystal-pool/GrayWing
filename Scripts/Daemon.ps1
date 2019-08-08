@@ -22,8 +22,13 @@ function Write-Log([parameter(ValueFromPipeline)]$text) {
 }
 
 trap {
-    Write-Error $_
-    Write-Log "[FATAL]$_\n$($_.ScriptStackTrace)"
+    try {
+    }
+    finally {
+        # We might trigger Exception when processing the main `finally` block when SIGINT received.
+        $Timestamp = Get-Date -Format o
+        "[$Timestamp][FATAL]$_\n$($_.ScriptStackTrace)" >> "$LogDir/$LogFile"
+    }
     Exit 1
 }
 
@@ -120,8 +125,12 @@ function stopServer() {
             # Escape pwsh alias
             /usr/bin/env kill -s INT $ids | Write-Log
             # Allow for 10 sec. for each process
-            $RunningProcesses | % { $_.WaitForExit(10000) }
-            Stop-Process $ids
+            $RunningProcesses | % { 
+                if (-not $_.WaitForExit(10000)) {
+                    Write-Log "Kill process: $($_.Id)"
+                    $_.Kill()
+                } 
+            }
         }
         $PidFileContent | % { flushServerLogs -CorrelationId $_.Correlation }
         return -not -not $RunningProcesses
