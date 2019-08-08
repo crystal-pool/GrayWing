@@ -71,6 +71,7 @@ function startServer() {
 
 function flushServerLogs([string]$CorrelationId) {
     $ServerPid = Get-Content "$IncomingLogDir/$CorrelationId.pid" -ErrorAction SilentlyContinue
+    Write-Log "[$CorrelationId]Collect server logs for PID $ServerPid."
     $LinePrefix = "[$CorrelationId][$ServerPid] "
     Get-Content "$IncomingLogDir/$CorrelationId.out" -ErrorAction SilentlyContinue | % { $LinePrefix + $_ } >> "$LogDir/$LogFile"
     Get-Content "$IncomingLogDir/$CorrelationId.err" -ErrorAction SilentlyContinue | % { $LinePrefix + $_ } >> "$LogDir/$ErrLogFile"
@@ -110,9 +111,9 @@ function stopServer() {
         $fields = $_.Split()
         return @{Pid = $fields[0]; Correlation = $fields[1] }
     }
+    Remove-Item $PidFile
     $RunningProcesses = Get-Process -Id $PidFileContent.Pid -ErrorAction SilentlyContinue
     try {
-        Remove-Item $PidFile
         if ($RunningProcesses) {
             $ids = $RunningProcesses.Id;
             Write-Log "Stop process(es): $ids."
