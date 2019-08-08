@@ -117,7 +117,7 @@ function stopServer() {
             $ids = $RunningProcesses.Id;
             Write-Log "Stop process(es): $ids."
             # Escape pwsh alias
-            /usr/bin/env kill -s INT $ids
+            /usr/bin/env kill -s INT $ids | Write-Log
             # Allow for 10 sec. for each process
             $RunningProcesses | % { $_.WaitForExit(10000) }
             Stop-Process $ids
@@ -137,7 +137,7 @@ function fetchRemoteUpdate() {
     if ((getCurrentBranchName) -ne $MASTER_BRANCH) {
         throw [Exception]"The repository is not on the $MASTER_BRANCH branch."
     }
-    git fetch --prune
+    git fetch --prune | Write-Log
     checkLastExitCode
     $LocalHead = git rev-parse "@"
     $RemoteHead = git rev-parse "@{u}"
