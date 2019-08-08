@@ -45,7 +45,7 @@ function buildClient() {
     cd $ClientRoot
     npm install | Write-Log
     checkLastExitCode
-    ng build --prod | Write-Log
+    npm run build:prod | Write-Log
     checkLastExitCode
 }
 
