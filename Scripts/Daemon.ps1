@@ -10,6 +10,21 @@ $IncomingLogDir = "/var/log/crystalpool/graywing-qs-dotnet-ic"
 $LogFile = "graywing-qs.log"
 $ErrLogFile = "graywing-qs.err.log"
 
+trap {
+    $ex = $_
+    try {
+        Write-Host "[FATAL]"
+        Write-Host $_
+        Write-Host ($_.ScriptStackTrace)
+    }
+    finally {
+        # We might trigger Exception when processing the main `finally` block when SIGINT received.
+        $Timestamp = Get-Date -Format o
+        "[$Timestamp][FATAL]$_\n$($_.ScriptStackTrace)" >> "$LogDir/$LogFile"
+    }
+    Exit 1
+}
+
 function Write-Log([parameter(ValueFromPipeline)]$text) {
     try {
         $Timestamp = Get-Date -Format o
@@ -19,17 +34,6 @@ function Write-Log([parameter(ValueFromPipeline)]$text) {
     catch {
         Write-Error $_
     }
-}
-
-trap {
-    try {
-    }
-    finally {
-        # We might trigger Exception when processing the main `finally` block when SIGINT received.
-        $Timestamp = Get-Date -Format o
-        "[$Timestamp][FATAL]$_\n$($_.ScriptStackTrace)" >> "$LogDir/$LogFile"
-    }
-    Exit 1
 }
 
 function checkLastExitCode() {
@@ -69,7 +73,7 @@ function startServer() {
     "$ServerPid" > "$IncomingLogDir/$CorrelationId.pid"
     "$ServerPid $CorrelationId" >> $PidFile
     "[$CorrelationId][$ServerPid][$Timestamp] Started dotnet on PID $($ServerPid)" >> "$LogDir/$LogFile"
-    Write-Log "[$CorrelationId] Started server on PID $($ServerPid)"
+    Write-Log "[$CorrelationId]Started server on PID $($ServerPid)"
     # We shouldn't dispose $Process, or stdout won't be able to get written.
     return $ServerPid
 }
@@ -91,11 +95,11 @@ function isServerAlive([int]$Id) {
     try {
         $Process = Get-Process -Id $Id -ErrorAction SilentlyContinue
         if (-not $Process) {
-            Write-Log "Process $ServerPid does not exist."
+            Write-Log "isServerAlive: Process $ServerPid does not exist."
             return $false
         }
         if ($Process.HasExited) {
-            Write-Log "Process $ServerPid has exited with code $($Process.ExitCode) on $($Process.ExitTime)."
+            Write-Log "isServerAlive: Process $ServerPid has exited with code $($Process.ExitCode) on $($Process.ExitTime)."
         }
         return -not $Process.HasExited
     }
@@ -109,7 +113,7 @@ function isServerAlive([int]$Id) {
 function stopServer() {
     # Terminate running processes
     if (-not (Test-Path $PidFile -PathType Leaf)) {
-        Write-Log "PID file does not exist."
+        Write-Log "stopServer: PID file does not exist."
         return $false
     }
     $PidFileContent = Get-Content $PidFile | % {
