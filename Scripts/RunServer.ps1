@@ -24,7 +24,5 @@ Write-Host "RepoRoot: $RepoRoot"
 Write-Host "ServerRoot: $RepoRoot"
 cd $ServerRoot
 
-dotnet build -c:Release
-checkLastExitCode
 dotnet run -c:Release
 checkLastExitCode
