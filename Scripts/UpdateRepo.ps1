@@ -187,7 +187,7 @@ $Minutes * * * * "$ScriptPath" -RestartService &>> "$CronLogPath"
                     -not $inRemovalBlock 
                 } 
             }
-            if ($crontab[-1]) {
+            if ($crontab -and $crontab[-1]) {
                 # Add empty line at the end of crontab
                 $crontab = @($crontab, "")
             }
