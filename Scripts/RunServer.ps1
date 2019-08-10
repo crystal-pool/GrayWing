@@ -49,9 +49,13 @@ if ($HOME -eq "/" -or -not (Resolve-Path $HOME -ErrorAction SilentlyContinue)) {
     $env:DOTNET_CLI_HOME = $UserProfile
 }
 
-$Timestamp = Get-Date -Format o
+dotnet dev-certs https
+checkLastExitCode
+
 $Correlation = (New-Guid).ToString("N")
 Write-Host "Start server process. Correlation: $Correlation"
+
+$Timestamp = Get-Date -Format o
 "[$Correlation] | START | $Timestamp" >> $LogPath
 "[$Correlation] | START | $Timestamp" >> $ErrLogPath
 dotnet run -c:Release 1>> $LogPath 2>> $ErrLogPath
