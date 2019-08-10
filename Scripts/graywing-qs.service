@@ -1,11 +1,12 @@
 [Unit]
-Description=An HTTP service providing SPARQL HTTP endpoint and a query web app for CrystalPool, a Warriors knowledge base.
+Description=GrayWing SPARQL HTTP endpoint service
 Documentation=https://github.com/crystal-pool/GrayWing
 After=syslog.target network.target
 
 [Service]
 Type=simple
-ExecStartPre="$GRAY_WING_UPDATE_REPO_PATH"; "$GRAY_WING_UPDATE_REPO_PATH" -Install
+ExecStartPre="$GRAY_WING_UPDATE_REPO_PATH
+ExecStartPre="$GRAY_WING_UPDATE_REPO_PATH" -Install
 ExecStart="$GRAY_WING_RUN_SERVER_PATH"
 StandardOutput=syslog
 StandardError=syslog
