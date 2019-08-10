@@ -95,6 +95,7 @@ function getCurrentBranchName() {
 }
 
 function fetchRemoteUpdate() {
+    $Correlation = (New-Guid).ToString("N")
     cd $RepoRoot
     if ((getCurrentBranchName) -ne $MASTER_BRANCH) {
         throw [Exception]"The repository is not on the $MASTER_BRANCH branch."
@@ -106,16 +107,16 @@ function fetchRemoteUpdate() {
     $RemoteHead = git rev-parse "@{u}"
     checkLastExitCode
     if ($LocalHead -ne $RemoteHead) {
-        Write-Host "Need to update local repository."
-        Write-Host "Local HEAD: $LocalHead"
-        Write-Host "Remote HEAD: $LocalHead"
+        Write-Host "[$Correlation][$(Get-Date -Format o)] Need to update local repository."
+        Write-Host "[$Correlation] Local -> Remote: $LocalHead -> $RemoteHead"
         $needStartService = $false
+        $sw = [System.Diagnostics.Stopwatch]::StartNew()
         try {
             if ($RestartService) {
                 [string]$status = systemctl is-active $ServiceUnitName
                 $status = $status.Trim()
                 if ($status -eq "active") {
-                    Write-Host "Stop $ServiceUnitName"
+                    Write-Host "[$Correlation] Stop $ServiceUnitName"
                     systemctl stop $ServiceUnitName
                     checkLastExitCode
                     $needStartService = $true
@@ -127,8 +128,9 @@ function fetchRemoteUpdate() {
             buildServer
         }
         finally {
+            Write-Host "[$Correlation] Time elapsed: $($sw.Elapsed)." 
             if ($needStartService) {
-                Write-Host "Start $ServiceUnitName"
+                Write-Host "[$Correlation] Start $ServiceUnitName"
                 systemctl start $ServiceUnitName
                 checkLastExitCode
             }
