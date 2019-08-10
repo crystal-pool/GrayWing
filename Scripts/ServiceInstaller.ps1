@@ -6,6 +6,12 @@
 
 .Description
 Installs/uninstalls the graywing-qs service under systemd.service framework.
+
+.Example
+./ServiceInstaller.ps1 -i
+
+.Example
+./ServiceInstaller.ps1 -u
 #>
 
 param(
@@ -36,6 +42,12 @@ if (-not $Force -and -not $IsLinux) {
 
 $SERVICE_NAME = "graywing-qs.service"
 
+function checkLastExitCode() {
+    if ($LASTEXITCODE) {
+        throw [System.Exception]"Command exit code indicates failure: $LASTEXITCODE."
+    }
+}
+
 function findAssetPath([string]$ScriptName) {
     $path = Resolve-Path @("$PSScriptRoot/$ScriptName", "./$ScriptName") -ErrorAction SilentlyContinue
     if ($path) {
@@ -60,13 +72,23 @@ if ($Install) {
         Replace("`$GRAY_WING_UPDATE_REPO_PATH", $updateRepoPath).`
         Replace("`$GRAY_WING_RUN_SERVER_PATH", $runServerPath)
     $serviceContent > $serviceTarget
-    if (Get-Command chmod -ErrorAction SilentlyContinue) {
+    if ($IsLinux) {
         chmod 664 $serviceTarget
+        checkLastExitCode
     }
     Write-Host "Installed: $serviceTarget"
-    Write-Host "Use systemctl [start|stop|restart] graywing-qs to operate the service."
+    if ($IsLinux) {
+        systemctl enable $SERVICE_NAME
+        checkLastExitCode
+        Write-Host "Enabled: $serviceTarget"
+    }
+    Write-Host "You may start the service manually now."
+    Write-Host "Use " -NoNewline
+    Write-Host "systemctl [start|stop|restart] $SERVICE_NAME" -NoNewline -ForegroundColor Green
+    Write-Host " to operate the service."
 }
 elseif ($Uninstall) {
+    systemctl disable $SERVICE_NAME
     Remove-Item "$serviceTarget"
     Write-Host "Uninstallation finished."
 }
