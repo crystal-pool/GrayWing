@@ -159,7 +159,7 @@ $Minutes * * * * "$ScriptPath" -RestartService
                 Write-Host "crontab is empty."
                 return
             }
-            $crontab = $crontab | % {
+            $crontab = $crontab | ? {
                 if ($_ -match "^#.* by graywing-qs/UpdateRepo.ps1\s*\[Begin\]") {
                     $inRemovalBlock = $true
                     $removedBlock = $true
