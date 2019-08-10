@@ -92,7 +92,7 @@ if ($Install) {
         }
         elseif (-not $userExists -and -not $groupExists) {
             Write-Host "Create service account: ${SERVICE_USER}:$SERVICE_USER"
-            useradd --system --shell /usr/sbin/nologin $SERVICE_USER
+            useradd --system --create-home --shell /usr/sbin/nologin $SERVICE_USER
             checkLastExitCode
         }
         else {

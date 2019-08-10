@@ -27,8 +27,6 @@ function checkLastExitCode() {
     }
 }
 
-$SERVICE_USER_PROFILE = "/tmp/graywing-profile/"
-
 $RepoRoot = Resolve-Path "$PSScriptRoot/.."
 $ServerRoot = Resolve-Path "$RepoRoot/GrayWing"
 
@@ -41,16 +39,6 @@ cd $ServerRoot
 # We are just ensuring these folders are accessible.
 New-Item $LogPath/.. -ItemType Directory -Force | Out-Null
 New-Item $ErrLogPath/.. -ItemType Directory -Force | Out-Null
-
-if ($HOME -eq "/" -or -not (Resolve-Path $HOME -ErrorAction SilentlyContinue)) {
-    # dotnet need a home.
-    $UserProfile = New-Item $SERVICE_USER_PROFILE -ItemType Directory -Force
-    Write-Host "DOTNET_CLI_HOME: $UserProfile"
-    $env:DOTNET_CLI_HOME = $UserProfile
-}
-
-# dotnet dev-certs https
-# checkLastExitCode
 
 $Correlation = (New-Guid).ToString("N")
 Write-Host "Start server process. Correlation: $Correlation"

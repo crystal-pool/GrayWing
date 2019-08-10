@@ -45,7 +45,6 @@ $ClientRoot = Resolve-Path "$RepoRoot/graywing-client"
 $ServerRoot = Resolve-Path "$RepoRoot/GrayWing"
 $ServiceUnitName = "graywing-qs.service"
 $SERVICE_USER = "crystalpool"
-$SERVICE_USER_PROFILE = "/tmp/graywing-profile/"
 
 trap {
     Write-Error $_
@@ -143,12 +142,6 @@ function fetchRemoteUpdate() {
 
 switch ($PSCmdlet.ParameterSetName) {
     "Execute" {
-        if ($HOME -eq "/" -or -not (Resolve-Path $HOME -ErrorAction SilentlyContinue)) {
-            # dotnet need a home.
-            $UserProfile = New-Item $SERVICE_USER_PROFILE -ItemType Directory -Force
-            Write-Host "DOTNET_CLI_HOME: $UserProfile"
-            $env:DOTNET_CLI_HOME = $UserProfile
-        }
         fetchRemoteUpdate
     }
     "InstallCron" {
