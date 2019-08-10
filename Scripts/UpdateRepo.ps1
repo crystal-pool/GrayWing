@@ -135,7 +135,7 @@ switch ($PSCmdlet.ParameterSetName) {
     "Execute" {
         fetchRemoteUpdate
     }
-    "Install" {
+    "InstallCron" {
         if ($InstallCron) {
             $ScriptPath = Resolve-Path $MyInvocation.InvocationName
             $Minutes = "$(Get-Random -Min:3 -Max:20),$(Get-Random -Min:23 -Max:40),$(Get-Random -Min:43 -Max:60)"
@@ -149,7 +149,7 @@ $Minutes * * * * "$ScriptPath" -RestartService
             Write-Host "Installed cron jobs at (minute): $Minutes"
         }
     }
-    "Uninstall" {
+    "UninstallCron" {
         if ($UninstallCron) {
             $inRemovalBlock = $false
             $removedBlock = $false
