@@ -92,7 +92,7 @@ if ($Install) {
         }
         elseif (-not $userExists -and -not $groupExists) {
             Write-Host "Create service account: ${SERVICE_USER}:$SERVICE_USER"
-            useradd --system $SERVICE_USER
+            useradd --system --shell /usr/sbin/nologin $SERVICE_USER
             checkLastExitCode
         }
         else {
@@ -124,7 +124,7 @@ if ($Install) {
         Write-Host "Make sure working folders are accessible."
         New-Item $SERVICE_LOG_ROOT -ItemType Directory -Force | Out-Null
         chown -R "${SERVICE_USER}:$SERVICE_USER" $SERVICE_LOG_ROOT
-        chmod -R 664 $SERVICE_LOG_ROOT
+        chmod 754 $SERVICE_LOG_ROOT
     }
     Write-Host "You may start the service manually now."
     Write-Host "Use " -NoNewline
