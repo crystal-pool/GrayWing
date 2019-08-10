@@ -42,11 +42,20 @@ cd $ServerRoot
 New-Item $LogPath/.. -ItemType Directory -Force | Out-Null
 New-Item $ErrLogPath/.. -ItemType Directory -Force | Out-Null
 
-if (-not $HOME) {
+if ($HOME -eq "/" -or -not (Resolve-Path $HOME -ErrorAction SilentlyContinue)) {
     # dotnet need a home.
     $UserProfile = New-Item $SERVICE_USER_PROFILE -ItemType Directory -Force
     Write-Host "DOTNET_CLI_HOME: $UserProfile"
     $env:DOTNET_CLI_HOME = $UserProfile
 }
+
+$Timestamp = Get-Date -Format o
+$Correlation = (New-Guid).ToString("N")
+Write-Host "Start server process. Correlation: $Correlation"
+"[$Correlation] | START | $Timestamp" >> $LogPath
+"[$Correlation] | START | $Timestamp" >> $ErrLogPath
 dotnet run -c:Release 1>> $LogPath 2>> $ErrLogPath
+$Timestamp = Get-Date -Format o
+"[$Correlation] | END | $Timestamp | $LASTEXITCODE" >> $LogPath
+"[$Correlation] | END | $Timestamp | $LASTEXITCODE" >> $ErrLogPath
 checkLastExitCode

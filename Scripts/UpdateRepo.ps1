@@ -141,7 +141,7 @@ function fetchRemoteUpdate() {
 
 switch ($PSCmdlet.ParameterSetName) {
     "Execute" {
-        if (-not $HOME) {
+        if ($HOME -eq "/" -or -not (Resolve-Path $HOME -ErrorAction SilentlyContinue)) {
             # dotnet need a home.
             $UserProfile = New-Item $SERVICE_USER_PROFILE -ItemType Directory -Force
             Write-Host "DOTNET_CLI_HOME: $UserProfile"
