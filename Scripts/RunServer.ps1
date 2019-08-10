@@ -58,8 +58,13 @@ Write-Host "Start server process. Correlation: $Correlation"
 $Timestamp = Get-Date -Format o
 "[$Correlation] | START | $Timestamp" >> $LogPath
 "[$Correlation] | START | $Timestamp" >> $ErrLogPath
-dotnet run -c:Release --launch-profile:Production 1>> $LogPath 2>> $ErrLogPath
-$Timestamp = Get-Date -Format o
-"[$Correlation] | END | $Timestamp | $LASTEXITCODE" >> $LogPath
-"[$Correlation] | END | $Timestamp | $LASTEXITCODE" >> $ErrLogPath
-checkLastExitCode
+try {
+    dotnet run -c:Release --launch-profile:Production 1>> $LogPath 2>> $ErrLogPath
+}
+finally {
+    # We may received SIGINT now; place code in finally block.
+    $Timestamp = Get-Date -Format o
+    "[$Correlation] | END | $Timestamp | $LASTEXITCODE" >> $LogPath
+    "[$Correlation] | END | $Timestamp | $LASTEXITCODE" >> $ErrLogPath
+    checkLastExitCode
+}
