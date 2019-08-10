@@ -44,7 +44,7 @@ $RepoRoot = Resolve-Path "$PSScriptRoot/.."
 $ClientRoot = Resolve-Path "$RepoRoot/graywing-client"
 $ServerRoot = Resolve-Path "$RepoRoot/GrayWing"
 $ServiceUnitName = "graywing-qs.service"
-$SERVICE_USER = "graywing"
+$SERVICE_USER = "crystalpool"
 $SERVICE_USER_PROFILE = "/tmp/graywing-profile/"
 
 trap {

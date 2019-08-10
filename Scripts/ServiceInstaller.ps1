@@ -55,7 +55,8 @@ if (-not $Force -and -not $IsLinux) {
 }
 
 $SERVICE_NAME = "graywing-qs.service"
-$SERVICE_USER = "graywing"
+$SERVICE_USER = "crystalpool"
+$SERVICE_LOG_ROOT = "/var/log/crystalpool/graywing-qs"
 
 function checkLastExitCode() {
     if ($LASTEXITCODE) {
@@ -92,6 +93,7 @@ if ($Install) {
         elseif (-not $userExists -and -not $groupExists) {
             Write-Host "Create service account: ${SERVICE_USER}:$SERVICE_USER"
             useradd --system $SERVICE_USER
+            checkLastExitCode
         }
         else {
             Write-Host "Is there already a real user with the same user name?"
@@ -101,6 +103,7 @@ if ($Install) {
             $repoRoot = Resolve-Path "$PSScriptRoot/.."
             Write-Host "chown -R on $repoRoot"
             chown -R "${SERVICE_USER}:$SERVICE_USER" $repoRoot
+            checkLastExitCode
         }
     }
     $serviceContent = Get-Content (findAssetPath $SERVICE_NAME)
@@ -118,6 +121,10 @@ if ($Install) {
         systemctl enable $SERVICE_NAME
         checkLastExitCode
         Write-Host "Enabled: $serviceTarget"
+        Write-Host "Make sure working folders are accessible."
+        New-Item $SERVICE_LOG_ROOT -ItemType Directory -Force | Out-Null
+        chown -R "${SERVICE_USER}:$SERVICE_USER" $SERVICE_LOG_ROOT
+        chmod -R 664 $SERVICE_LOG_ROOT
     }
     Write-Host "You may start the service manually now."
     Write-Host "Use " -NoNewline

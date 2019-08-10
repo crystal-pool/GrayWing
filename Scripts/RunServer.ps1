@@ -27,6 +27,8 @@ function checkLastExitCode() {
     }
 }
 
+$SERVICE_USER_PROFILE = "/tmp/graywing-profile/"
+
 $RepoRoot = Resolve-Path "$PSScriptRoot/.."
 $ServerRoot = Resolve-Path "$RepoRoot/GrayWing"
 
@@ -35,6 +37,8 @@ Write-Host "ServerRoot: $RepoRoot"
 Write-Host "UserName: $([System.Environment]::UserName)"
 cd $ServerRoot
 
+# We should have already created logdir upon installation (with root privilege).
+# We are just ensuring these folders are accessible.
 New-Item $LogPath/.. -ItemType Directory -Force | Out-Null
 New-Item $ErrLogPath/.. -ItemType Directory -Force | Out-Null
 
