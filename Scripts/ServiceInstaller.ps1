@@ -111,6 +111,9 @@ if ($Install) {
     $serviceContent = $serviceContent.`
         Replace("`$GRAY_WING_UPDATE_REPO_PATH", $updateRepoPath).`
         Replace("`$GRAY_WING_RUN_SERVER_PATH", $runServerPath)
+    if ($IsLinux) {
+        systemctl stop $SERVICE_NAME
+    }
     $serviceContent > $serviceTarget
     if ($IsLinux) {
         chmod 664 $serviceTarget
@@ -118,6 +121,7 @@ if ($Install) {
     }
     Write-Host "Installed: $serviceTarget"
     if ($IsLinux) {
+        systemctl daemon-reload
         systemctl enable $SERVICE_NAME
         checkLastExitCode
         Write-Host "Enabled: $serviceTarget"
