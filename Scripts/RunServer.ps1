@@ -5,6 +5,15 @@
 (Linux only) GrayWing Query Service entrypoint.
 #>
 
+param (
+    [Parameter()]
+    [string]
+    $LogPath = "/var/log/crystalpool/graywing-qs/server.log",
+    [Parameter()]
+    [string]
+    $ErrLogPath = "/var/log/crystalpool/graywing-qs/server.err.log"
+)
+
 trap {
     Write-Error $_
     Write-Host $_.ScriptStackTrace
@@ -13,6 +22,7 @@ trap {
 
 function checkLastExitCode() {
     if ($LASTEXITCODE) {
+        Write-Error "Command exit code indicates failure: $LASTEXITCODE"
         Exit $LASTEXITCODE
     }
 }
@@ -24,5 +34,8 @@ Write-Host "RepoRoot: $RepoRoot"
 Write-Host "ServerRoot: $RepoRoot"
 cd $ServerRoot
 
-dotnet run -c:Release
+New-Item $LogPath/.. -ItemType Directory -Force | Out-Null
+New-Item $ErrLogPath/.. -ItemType Directory -Force | Out-Null
+
+dotnet run -c:Release 1>> $LogPath 2>> $ErrLogPath
 checkLastExitCode

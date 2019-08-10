@@ -88,7 +88,10 @@ if ($Install) {
     Write-Host " to operate the service."
 }
 elseif ($Uninstall) {
+    systemctl stop $SERVICE_NAME
     systemctl disable $SERVICE_NAME
     Remove-Item "$serviceTarget"
+    systemctl daemon-reload
+    systemctl reset-failed $SERVICE_NAME
     Write-Host "Uninstallation finished."
 }
