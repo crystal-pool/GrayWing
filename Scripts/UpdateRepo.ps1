@@ -22,7 +22,7 @@ System.Boolean. Whether there are updates applied to the local repository.
 #>
 
 param(
-    [Parameter(ParameterSetName = "Run")]
+    [Parameter(ParameterSetName = "Execute")]
     [switch]
     $RestartService,
 
