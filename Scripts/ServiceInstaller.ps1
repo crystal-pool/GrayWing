@@ -1,5 +1,13 @@
 #!/usr/bin/env pwsh
 
+<#
+.Synopsis
+(Linux only) GrayWing Query Service installer.
+
+.Description
+Installs/uninstalls the graywing-qs service under systemd.service framework.
+#>
+
 param(
     [Parameter(ParameterSetName = "Install", Mandatory = $true)]
     [switch]
@@ -12,7 +20,7 @@ param(
     [Parameter(ParameterSetName = "Install")]
     [Parameter(ParameterSetName = "Uninstall")]
     [string]
-    $TargetDir = "/etc/init.d",
+    $TargetDir = "/etc/systemd/system/",
 
     [Parameter(ParameterSetName = "Install")]
     [Parameter(ParameterSetName = "Uninstall")]
@@ -20,41 +28,43 @@ param(
     $Force
 )
 
+$ErrorActionPreference = "Stop"
+
 if (-not $Force -and -not $IsLinux) {
     throw [System.PlatformNotSupportedException]"The script is only supported on Linux OS."
 }
 
-function findPowerShellPath() {
-    $path = Resolve-Path @("$PSHOME/pwsh", "$PSHOME/pwsh.exe", "$PSHOME/pwsh-preview", "$PSHOME/pwsh-preview.exe") -ErrorAction SilentlyContinue
-    if ($path) {
-        return $path[0].Path
-    }
-    throw [System.IO.FileNotFoundException]"Cannot locate powershell executable."
-}
+$SERVICE_NAME = "graywing-qs.service"
 
-function findDaemonPath() {
-    $path = Resolve-Path @("$PSScriptRoot/Daemon.ps1", "./Daemon.ps1") -ErrorAction SilentlyContinue
+function findAssetPath([string]$ScriptName) {
+    $path = Resolve-Path @("$PSScriptRoot/$ScriptName", "./$ScriptName") -ErrorAction SilentlyContinue
     if ($path) {
         return $path[0].Path
     }
-    throw [System.IO.FileNotFoundException]"Cannot locate daemon script."
+    throw [System.IO.FileNotFoundException]"Cannot locate $ScriptName script."
 }
 
 if ($Install) {
-    $PwshPath = findPowerShellPath
-    Write-Host "PowerShell path: $PwshPath"
-    $daemonPath = findDaemonPath
-    Write-Host "Daemon path: $daemonPath"
-    $initScript = Get-Content "./init.d.sh"
-    Write-Host
-    $initScript = $initScript.Replace("`$PWSH_PATH", $PwshPath).Replace("`$GRAY_WING_DAEMON_PATH", $daemonPath)
-    $initScript > "$TargetDir/graywing-qs"
-    if ($IsLinux) {
-        chmod a+x "$TargetDir/graywing-qs"
+    if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
+        Write-Warning "``pwsh`` is not available in your PATH. Service script might be unable to start."
     }
-    Write-Host "Installation finished."
-    Write-Host "Use service graywing-qs [start|stop|restart] to operate the service."
-} elseif ($Uninstall) {
-    Remove-Item "$TargetDir/graywing-qs"
+    $updateRepoPath = findAssetPath "UpdateRepo.ps1"
+    $runServerPath = findAssetPath "RunServer.ps1"
+    Write-Host "Repo updater: $updateRepoPath"
+    Write-Host "Service entrypoint: $runServerPath"
+    $serviceContent = Get-Content (findAssetPath $SERVICE_NAME)
+    Write-Host
+    $serviceContent = $serviceContent.`
+        Replace("`$GRAY_WING_UPDATE_REPO_PATH", $updateRepoPath).`
+        Replace("`$GRAY_WING_RUN_SERVER_PATH", $runServerPath)
+    $serviceContent > "$TargetDir/$SERVICE_NAME"
+    if (Get-Command chmod -ErrorAction SilentlyContinue) {
+        chmod 664 "$TargetDir/$SERVICE_NAME"
+    }
+    Write-Host "Installed: $TargetDir/$SERVICE_NAME"
+    Write-Host "Use systemctl [start|stop|restart] graywing-qs to operate the service."
+}
+elseif ($Uninstall) {
+    Remove-Item "$TargetDir/$SERVICE_NAME"
     Write-Host "Uninstallation finished."
 }
