@@ -44,6 +44,8 @@ function findAssetPath([string]$ScriptName) {
     throw [System.IO.FileNotFoundException]"Cannot locate $ScriptName script."
 }
 
+$serviceTarget = Join-Path $TargetDir $SERVICE_NAME
+
 if ($Install) {
     if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
         Write-Warning "``pwsh`` is not available in your PATH. Service script might be unable to start."
@@ -57,14 +59,14 @@ if ($Install) {
     $serviceContent = $serviceContent.`
         Replace("`$GRAY_WING_UPDATE_REPO_PATH", $updateRepoPath).`
         Replace("`$GRAY_WING_RUN_SERVER_PATH", $runServerPath)
-    $serviceContent > "$TargetDir/$SERVICE_NAME"
+    $serviceContent > $serviceTarget
     if (Get-Command chmod -ErrorAction SilentlyContinue) {
-        chmod 664 "$TargetDir/$SERVICE_NAME"
+        chmod 664 $serviceTarget
     }
-    Write-Host "Installed: $TargetDir/$SERVICE_NAME"
+    Write-Host "Installed: $serviceTarget"
     Write-Host "Use systemctl [start|stop|restart] graywing-qs to operate the service."
 }
 elseif ($Uninstall) {
-    Remove-Item "$TargetDir/$SERVICE_NAME"
+    Remove-Item "$serviceTarget"
     Write-Host "Uninstallation finished."
 }
