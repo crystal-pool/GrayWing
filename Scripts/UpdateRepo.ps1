@@ -80,6 +80,14 @@ function validateRepoRoot() {
     }
 }
 
+function getCurrentBranchName() {
+    $BranchList = git branch --no-color | sls ^\*
+    checkLastExitCode
+    if ($BranchList[0]) {
+        return $BranchList[0].Line.Substring(1).Trim()
+    }
+}
+
 function fetchRemoteUpdate() {
     cd $RepoRoot
     if ((getCurrentBranchName) -ne $MASTER_BRANCH) {
