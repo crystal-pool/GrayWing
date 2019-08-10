@@ -32,10 +32,17 @@ $ServerRoot = Resolve-Path "$RepoRoot/GrayWing"
 
 Write-Host "RepoRoot: $RepoRoot"
 Write-Host "ServerRoot: $RepoRoot"
+Write-Host "UserName: $([System.Environment]::UserName)"
 cd $ServerRoot
 
 New-Item $LogPath/.. -ItemType Directory -Force | Out-Null
 New-Item $ErrLogPath/.. -ItemType Directory -Force | Out-Null
 
+if (-not $HOME) {
+    # dotnet need a home.
+    $UserProfile = New-Item $SERVICE_USER_PROFILE -ItemType Directory -Force
+    Write-Host "DOTNET_CLI_HOME: $UserProfile"
+    $env:DOTNET_CLI_HOME = $UserProfile
+}
 dotnet run -c:Release 1>> $LogPath 2>> $ErrLogPath
 checkLastExitCode

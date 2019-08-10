@@ -7,7 +7,9 @@ StartLimitBurst=5
 
 [Service]
 Type=simple
-ExecStartPre="$GRAY_WING_UPDATE_REPO_PATH
+User=graywing
+Group=graywing
+ExecStartPre="$GRAY_WING_UPDATE_REPO_PATH"
 ExecStartPre="$GRAY_WING_UPDATE_REPO_PATH" -Install
 ExecStart="$GRAY_WING_RUN_SERVER_PATH"
 StandardOutput=syslog

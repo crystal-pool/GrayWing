@@ -7,8 +7,17 @@
 .Description
 Installs/uninstalls the graywing-qs service under systemd.service framework.
 
+.Parameter Install
+Install the service, doing necessary configuration (such as creating service account).
+
+.Parameter ChangeOwner
+Whether to change the owner of the whole repository directory to graywing:graywing.
+
+.Parameter Uninstall
+Uninstall the service.
+
 .Example
-./ServiceInstaller.ps1 -i
+./ServiceInstaller.ps1 -i -co
 
 .Example
 ./ServiceInstaller.ps1 -u
@@ -29,6 +38,11 @@ param(
     $TargetDir = "/etc/systemd/system/",
 
     [Parameter(ParameterSetName = "Install")]
+    [Alias("CO")]
+    [switch]
+    $ChangeOwner,
+
+    [Parameter(ParameterSetName = "Install")]
     [Parameter(ParameterSetName = "Uninstall")]
     [switch]
     $Force
@@ -41,6 +55,7 @@ if (-not $Force -and -not $IsLinux) {
 }
 
 $SERVICE_NAME = "graywing-qs.service"
+$SERVICE_USER = "graywing"
 
 function checkLastExitCode() {
     if ($LASTEXITCODE) {
@@ -66,6 +81,28 @@ if ($Install) {
     $runServerPath = findAssetPath "RunServer.ps1"
     Write-Host "Repo updater: $updateRepoPath"
     Write-Host "Service entrypoint: $runServerPath"
+    if ($IsLinux) {
+        id -u $SERVICE_USER | Out-Null
+        $userExists = -not $LASTEXITCODE
+        id -g $SERVICE_USER | Out-Null
+        $groupExists = -not $LASTEXITCODE
+        if ($userExists -and $groupExists) {
+            Write-Host "Service account exists: ${SERVICE_USER}:$SERVICE_USER"
+        }
+        elseif (-not $userExists -and -not $groupExists) {
+            Write-Host "Create service account: ${SERVICE_USER}:$SERVICE_USER"
+            useradd --system $SERVICE_USER
+        }
+        else {
+            Write-Host "Is there already a real user with the same user name?"
+            throw [System.InvalidOperationException]"Inconsistent account existence status. UserExists: $userExists, GroupExists: $groupExists."
+        }
+        if ($ChangeOwner) {
+            $repoRoot = Resolve-Path "$PSScriptRoot/.."
+            Write-Host "chown -R on $repoRoot"
+            chown -R "${SERVICE_USER}:$SERVICE_USER" $repoRoot
+        }
+    }
     $serviceContent = Get-Content (findAssetPath $SERVICE_NAME)
     Write-Host
     $serviceContent = $serviceContent.`
@@ -84,7 +121,7 @@ if ($Install) {
     }
     Write-Host "You may start the service manually now."
     Write-Host "Use " -NoNewline
-    Write-Host "systemctl [start|stop|restart] $SERVICE_NAME" -NoNewline -ForegroundColor Green
+    Write-Host "systemctl [start|stop|restart] $SERVICE_NAME" -NoNewline -ForegroundColor DarkCyan
     Write-Host " to operate the service."
 }
 elseif ($Uninstall) {
@@ -94,4 +131,7 @@ elseif ($Uninstall) {
     systemctl daemon-reload
     systemctl reset-failed $SERVICE_NAME
     Write-Host "Uninstallation finished."
+    Write-Host "Note: You may delete " -NoNewline
+    Write-Host "${SERVICE_USER}:$SERVICE_USER" -NoNewline -ForegroundColor DarkCyan
+    Write-Host " acconut manually, if necessary."
 }
