@@ -114,30 +114,24 @@ function fetchRemoteUpdate() {
     if ($LocalHead -ne $RemoteHead) {
         Write-Host "[$Correlation][$(Get-Date -Format o)] Need to update local repository."
         Write-Host "[$Correlation] Local -> Remote: $LocalHead -> $RemoteHead"
-        $needStartService = $false
         $sw = [System.Diagnostics.Stopwatch]::StartNew()
         try {
-            if ($RestartService) {
-                [string]$status = systemctl is-active $ServiceUnitName
-                if ($status.Trim() -eq "active") {
-                    Write-Host "[$Correlation] Stop $ServiceUnitName"
-                    systemctl stop $ServiceUnitName
-                    checkLastExitCode
-                    $needStartService = $true
-                }
-            }
+            # We can safely change the files on Linux.
             sudo -H -u $SERVICE_USER git reset --hard $RemoteHead
             checkLastExitCode
             buildClient
             buildServer
+            if ($RestartService) {
+                [string]$status = systemctl is-active $ServiceUnitName
+                if ($status.Trim() -eq "active") {
+                    Write-Host "[$Correlation] Restart $ServiceUnitName"
+                    systemctl restart $ServiceUnitName
+                    checkLastExitCode
+                }
+            }
         }
         finally {
             Write-Host "[$Correlation] Time elapsed: $($sw.Elapsed)." 
-            if ($needStartService) {
-                Write-Host "[$Correlation] Start $ServiceUnitName"
-                systemctl start $ServiceUnitName
-                checkLastExitCode
-            }
         }
 
         return $true
