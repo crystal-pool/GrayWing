@@ -129,14 +129,14 @@ function fetchRemoteUpdate() {
             if ($RestartService) {
                 [string]$status = systemctl is-active $SERVICE_NAME
                 if ($status.Trim() -eq "active") {
-                    Write-Log "[$Correlation] Restart $SERVICE_NAME"
+                    Write-Log "Restart $SERVICE_NAME"
                     systemctl restart $SERVICE_NAME
                     checkLastExitCode
                 }
             }
         }
         finally {
-            Write-Log "[$Correlation] Time elapsed: $($sw.Elapsed)." 
+            Write-Log "Time elapsed: $($sw.Elapsed)." 
         }
 
         return $true

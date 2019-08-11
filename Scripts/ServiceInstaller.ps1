@@ -36,7 +36,12 @@ param(
     [Parameter(ParameterSetName = "Install")]
     [Parameter(ParameterSetName = "Uninstall")]
     [string]
-    $TargetDir = "/etc/systemd/system/",
+    $SystemUnitDir = "/etc/systemd/system",
+
+    [Parameter(ParameterSetName = "Install")]
+    [Parameter(ParameterSetName = "Uninstall")]
+    [string]
+    $LogRotateConfigDir = "/etc/logrotate.d",
 
     [Parameter(ParameterSetName = "Install")]
     [Alias("CO")]
@@ -61,6 +66,7 @@ if (-not $Force) {
 }
 
 $SERVICE_NAME = "graywing-qs.service"
+$LOGROTATE_NAME = "graywing-qs.logrotate"
 $SERVICE_USER = "crystalpool"
 $SERVICE_LOG_ROOT = "/var/log/crystalpool/graywing-qs"
 
@@ -78,7 +84,18 @@ function findAssetPath([string]$ScriptName) {
     throw [System.IO.FileNotFoundException]"Cannot locate $ScriptName script."
 }
 
-$serviceTarget = Join-Path $TargetDir $SERVICE_NAME
+function promptReplace([string]$Path) {
+    $Resolved = Resolve-Path $Path -ErrorAction SilentlyContinue
+    if ($Resolved) {
+        if (-not $PSCmdlet.ShouldContinue("Replace `"$Resolved`".", "File already exists. Overwrite?")) {
+            return $false
+        }
+    }
+    return $true
+}
+
+$serviceTarget = Join-Path $SystemUnitDir $SERVICE_NAME
+$logRotateTarget = Join-Path $LogRotateConfigDir $LOGROTATE_NAME
 
 if ($Install) {
     if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
@@ -105,15 +122,8 @@ if ($Install) {
             Write-Host "Is there already a real user with the same user name?"
             throw [System.InvalidOperationException]"Inconsistent account existence status. UserExists: $userExists, GroupExists: $groupExists."
         }
-        if ($ChangeOwner) {
-            $repoRoot = Resolve-Path "$PSScriptRoot/.."
-            Write-Host "chown -R on $repoRoot"
-            chown -R "${SERVICE_USER}:$SERVICE_USER" $repoRoot
-            checkLastExitCode
-        }
     }
     $serviceContent = Get-Content (findAssetPath $SERVICE_NAME)
-    Write-Host
     $serviceContent = $serviceContent.`
         Replace("`$GRAY_WING_UPDATE_REPO_PATH", $updateRepoPath).`
         Replace("`$GRAY_WING_RUN_SERVER_PATH", $runServerPath)
@@ -122,6 +132,9 @@ if ($Install) {
         if ($status.Trim() -eq "active") {
             systemctl stop $SERVICE_NAME
         }
+    }
+    if (-not (promptReplace $serviceTarget)) {
+        return
     }
     $serviceContent > $serviceTarget
     if ($IsLinux) {
@@ -134,12 +147,27 @@ if ($Install) {
         systemctl enable $SERVICE_NAME
         checkLastExitCode
         Write-Host "Enabled: $serviceTarget"
+    }
+    Write-Host "Setup logrotate."
+    $logRotateContent = Get-Content (findAssetPath $LOGROTATE_NAME)
+    if (-not (promptReplace $logRotateTarget)) {
+        return
+    }
+    $logRotateContent > $logRotateTarget
+    if ($ChangeOwner) {
+        $repoRoot = Resolve-Path "$PSScriptRoot/.."
+        Write-Host "chown -R on $repoRoot"
+        chown -R "${SERVICE_USER}:$SERVICE_USER" $repoRoot
+        checkLastExitCode
+    }
+    if ($IsLinux) {
         Write-Host "Make sure working folders are accessible."
         New-Item $SERVICE_LOG_ROOT -ItemType Directory -Force | Out-Null
         chown -R "${SERVICE_USER}:$SERVICE_USER" $SERVICE_LOG_ROOT
         chmod 754 $SERVICE_LOG_ROOT
     }
-    Write-Host "You may start the service manually now."
+    Write-Host
+    Write-Host "All set. You may start the service manually now."
     Write-Host "Use " -NoNewline
     Write-Host "systemctl [start|stop|restart] $SERVICE_NAME" -NoNewline -ForegroundColor DarkCyan
     Write-Host " to operate the service."
