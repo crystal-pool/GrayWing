@@ -2,16 +2,17 @@
 
 <#
 .Synopsis
-(Linux only) GrayWing Query Service installer.
+(Linux only, root) GrayWing Query Service (GrayWing) installer.
 
 .Description
 Installs/uninstalls the graywing-qs service under systemd.service framework.
+You need to have root privilege to execute the script.
 
 .Parameter Install
-Install the service, doing necessary configuration (such as creating service account).
+Install the service, doing necessary configuration (such as creating crystalpool:crystalpool service account).
 
 .Parameter ChangeOwner
-Whether to change the owner of the whole repository directory to graywing:graywing.
+Whether to change the owner of the whole repository directory to crysstalpool:crystalpool.
 
 .Parameter Uninstall
 Uninstall the service.
@@ -50,8 +51,13 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-if (-not $Force -and -not $IsLinux) {
-    throw [System.PlatformNotSupportedException]"The script is only supported on Linux OS."
+if (-not $Force) {
+    if ( -not $IsLinux) {
+        throw [System.PlatformNotSupportedException]"The script is only supported on Linux OS."
+    }
+    if ((id -u) -ne 0) {
+        Write-Warning "The script requires to run with root access. You may see errors below."
+    }
 }
 
 $SERVICE_NAME = "graywing-qs.service"

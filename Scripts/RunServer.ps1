@@ -2,7 +2,10 @@
 
 <#
 .Synopsis
-(Linux only) GrayWing Query Service entrypoint.
+(Linux only) CrystalPool Query Service (GrayWing) entrypoint.
+
+.Description
+GrayWing service entrypoint. This script will be executed by the service daemon under service account.
 #>
 
 param (
@@ -54,5 +57,8 @@ finally {
     $Timestamp = Get-Date -Format o
     "[$Correlation] | END | $Timestamp | $LASTEXITCODE" >> $LogPath
     "[$Correlation] | END | $Timestamp | $LASTEXITCODE" >> $ErrLogPath
-    checkLastExitCode
+    if ($LASTEXITCODE -ne 137) {
+        # Ctrl+C
+        checkLastExitCode
+    }
 }
