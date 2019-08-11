@@ -88,12 +88,12 @@ function buildClient() {
 
 function validateRepoRoot() {
     Write-Log "Repository root: $RepoRoot"
+    cd $RepoRoot
     $GitDir = git rev-parse --git-dir
-    checkLastExitCode
     Write-Log "Git dir: $GitDir"
     $GitRepoDir = Resolve-Path "$GitDir/.."
     if ($RepoRoot.Path -ne $GitRepoDir.Path) {
-        throw [Exception]"Git repository root validation failure. Make sure Daemon.ps1 is in the correct location."
+        throw [Exception]"Git repository root validation failure. Make sure UpdateRepo.ps1 is in the correct location."
     }
 }
 

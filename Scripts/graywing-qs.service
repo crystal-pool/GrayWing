@@ -1,3 +1,5 @@
+# Please use ./ServiceInstaller.ps1 to install the service.
+
 [Unit]
 Description=GrayWing SPARQL HTTP endpoint service
 Documentation=https://github.com/crystal-pool/GrayWing

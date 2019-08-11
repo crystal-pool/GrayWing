@@ -12,6 +12,7 @@ param (
     [Parameter()]
     [string]
     $LogPath = "/var/log/crystalpool/graywing-qs/server.log",
+
     [Parameter()]
     [string]
     $ErrLogPath = "/var/log/crystalpool/graywing-qs/server.err.log"
