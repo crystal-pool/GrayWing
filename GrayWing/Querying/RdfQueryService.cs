@@ -58,9 +58,11 @@ namespace GrayWing.Querying
             dumpFileFullPath = Path.Combine(hosting.ContentRootPath, this.options.DumpFilePath);
             if (!File.Exists(dumpFileFullPath))
                 throw new FileNotFoundException("The specified file does not exist: " + this.options.DumpFilePath + ".", this.options.DumpFilePath);
-            //
+
             logger = loggerFactory.CreateLogger<RdfQueryService>();
             queryParser = new SparqlQueryParser(SparqlQuerySyntax.Sparql_1_1);
+
+            logger.LogInformation("TTL dump file: {FileName}.", dumpFileFullPath);
         }
 
         private Task<LoadedGraph> EnsureGraphLoadedAsync()
