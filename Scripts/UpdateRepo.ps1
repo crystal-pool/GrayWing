@@ -41,12 +41,14 @@ param(
 )
 
 $MASTER_BRANCH = "master"
-$RepoRoot = Resolve-Path "$PSScriptRoot/.."
-$ClientRoot = Resolve-Path "$RepoRoot/graywing-client"
-$ServerRoot = Resolve-Path "$RepoRoot/GrayWing"
 $SERVICE_NAME = "graywing-qs.service"
 $SERVICE_USER = "crystalpool"
 $ROOT_USER = "root"
+
+$RepoRoot = Resolve-Path "$PSScriptRoot/.."
+$ClientRoot = Resolve-Path "$RepoRoot/graywing-client"
+$ServerRoot = Resolve-Path "$RepoRoot/GrayWing"
+$Correlation = (New-Guid).ToString("N")
 
 trap {
     Write-Error $_
@@ -58,6 +60,10 @@ if (-not $IsLinux) {
     throw [System.PlatformNotSupportedException]"The script is only supported on Linux OS."
 }
 
+function Write-Log([object]$Item) {
+    $Item | % { Write-Host "[$Correlation][$(Get-Date -Format o)] $_" }
+}
+
 function checkLastExitCode() {
     if ($LASTEXITCODE) {
         throw [System.Exception]"Command exit code indicates failure: $LASTEXITCODE."
@@ -65,14 +71,14 @@ function checkLastExitCode() {
 }
 
 function buildServer() {
-    Write-Host "Build server app"
+    Write-Log "Build server app"
     cd $ServerRoot
     sudo -H -u $SERVICE_USER dotnet build -c:Release
     checkLastExitCode
 }
 
 function buildClient() {
-    Write-Host "Build graywing-client"
+    Write-Log "Build graywing-client"
     cd $ClientRoot
     sudo -H -u $SERVICE_USER npm install
     checkLastExitCode
@@ -81,10 +87,10 @@ function buildClient() {
 }
 
 function validateRepoRoot() {
-    Write-Host "Repository root: $RepoRoot"
+    Write-Log "Repository root: $RepoRoot"
     $GitDir = git rev-parse --git-dir
     checkLastExitCode
-    Write-Host "Git dir: $GitDir"
+    Write-Log "Git dir: $GitDir"
     $GitRepoDir = Resolve-Path "$GitDir/.."
     if ($RepoRoot.Path -ne $GitRepoDir.Path) {
         throw [Exception]"Git repository root validation failure. Make sure Daemon.ps1 is in the correct location."
@@ -100,7 +106,6 @@ function getCurrentBranchName() {
 }
 
 function fetchRemoteUpdate() {
-    $Correlation = (New-Guid).ToString("N")
     cd $RepoRoot
     if ((getCurrentBranchName) -ne $MASTER_BRANCH) {
         throw [Exception]"The repository is not on the $MASTER_BRANCH branch."
@@ -112,8 +117,8 @@ function fetchRemoteUpdate() {
     $RemoteHead = git rev-parse "@{u}"
     checkLastExitCode
     if ($LocalHead -ne $RemoteHead) {
-        Write-Host "[$Correlation][$(Get-Date -Format o)] Need to update local repository."
-        Write-Host "[$Correlation] Local -> Remote: $LocalHead -> $RemoteHead"
+        Write-Log "Need to update local repository."
+        Write-Log "Local -> Remote: $LocalHead -> $RemoteHead"
         $sw = [System.Diagnostics.Stopwatch]::StartNew()
         try {
             # We can safely change the files on Linux.
@@ -124,14 +129,14 @@ function fetchRemoteUpdate() {
             if ($RestartService) {
                 [string]$status = systemctl is-active $SERVICE_NAME
                 if ($status.Trim() -eq "active") {
-                    Write-Host "[$Correlation] Restart $SERVICE_NAME"
+                    Write-Log "[$Correlation] Restart $SERVICE_NAME"
                     systemctl restart $SERVICE_NAME
                     checkLastExitCode
                 }
             }
         }
         finally {
-            Write-Host "[$Correlation] Time elapsed: $($sw.Elapsed)." 
+            Write-Log "[$Correlation] Time elapsed: $($sw.Elapsed)." 
         }
 
         return $true
@@ -145,6 +150,7 @@ if ((id -u) -ne 0) {
 
 switch ($PSCmdlet.ParameterSetName) {
     "Execute" {
+        validateRepoRoot
         fetchRemoteUpdate
     }
     "InstallCron" {
