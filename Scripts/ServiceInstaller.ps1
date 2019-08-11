@@ -118,7 +118,10 @@ if ($Install) {
         Replace("`$GRAY_WING_UPDATE_REPO_PATH", $updateRepoPath).`
         Replace("`$GRAY_WING_RUN_SERVER_PATH", $runServerPath)
     if ($IsLinux) {
-        systemctl stop $SERVICE_NAME
+        [string]$status = systemctl is-active $ServiceUnitName
+        if ($status.Trim() -eq "active") {
+            systemctl stop $SERVICE_NAME
+        }
     }
     $serviceContent > $serviceTarget
     if ($IsLinux) {
