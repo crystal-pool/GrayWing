@@ -44,7 +44,7 @@ $MASTER_BRANCH = "master"
 $RepoRoot = Resolve-Path "$PSScriptRoot/.."
 $ClientRoot = Resolve-Path "$RepoRoot/graywing-client"
 $ServerRoot = Resolve-Path "$RepoRoot/GrayWing"
-$ServiceUnitName = "graywing-qs.service"
+$SERVICE_NAME = "graywing-qs.service"
 $SERVICE_USER = "crystalpool"
 $ROOT_USER = "root"
 
@@ -122,10 +122,10 @@ function fetchRemoteUpdate() {
             buildClient
             buildServer
             if ($RestartService) {
-                [string]$status = systemctl is-active $ServiceUnitName
+                [string]$status = systemctl is-active $SERVICE_NAME
                 if ($status.Trim() -eq "active") {
-                    Write-Host "[$Correlation] Restart $ServiceUnitName"
-                    systemctl restart $ServiceUnitName
+                    Write-Host "[$Correlation] Restart $SERVICE_NAME"
+                    systemctl restart $SERVICE_NAME
                     checkLastExitCode
                 }
             }
