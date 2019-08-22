@@ -24,7 +24,7 @@ namespace GrayWing.Querying
         /// </summary>
         public string DumpFilePath { get; set; }
 
-        public TimeSpan QueryTimeout { get; set; } = TimeSpan.FromSeconds(120);
+        public TimeSpan QueryTimeout { get; set; } = TimeSpan.FromSeconds(10);
 
         public int ResultLimit { get; set; } = 5000;
 
