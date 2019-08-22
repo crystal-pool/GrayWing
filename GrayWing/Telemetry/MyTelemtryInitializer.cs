@@ -33,6 +33,7 @@ namespace GrayWing.Telemetry
         {
             var context = httpContextAccessor.HttpContext;
             if (context == null) return;
+            if (string.Equals(context.Request.Method, "DEBUG", StringComparison.OrdinalIgnoreCase)) return;
             var tracking = context.Features.Get<TelemetryTrackingFeature>();
             if (tracking == null)
             {
