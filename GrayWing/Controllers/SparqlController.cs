@@ -20,13 +20,15 @@ namespace GrayWing.Controllers
     {
 
         private readonly RdfQueryService queryService;
+        private readonly TelemetryClient telemetryClient;
         private ILogger logger;
         private const int QueryExpressionBufferSize = 4096;
         private const int QueryExpressionMaximumLength = 16 * 1024;
 
-        public SparqlController(RdfQueryService queryService, ILoggerFactory loggerFactory)
+        public SparqlController(RdfQueryService queryService, ILoggerFactory loggerFactory, TelemetryClient telemetryClient)
         {
             this.queryService = queryService;
+            this.telemetryClient = telemetryClient;
             this.logger = loggerFactory.CreateLogger<SparqlController>();
         }
 
@@ -58,7 +60,6 @@ namespace GrayWing.Controllers
                     }
                 }
             }
-            var telemetryClient = new TelemetryClient();
 
             var query = sb.ToString();
             if (string.IsNullOrWhiteSpace(query))

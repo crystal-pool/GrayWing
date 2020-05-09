@@ -12,8 +12,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -40,13 +42,23 @@ namespace GrayWing
             services.AddSingleton<ITelemetryInitializer, MyTelemetryInitializer>();
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
             services.Configure<RdfQueryServiceOptions>(Configuration.GetSection("RdfQueryService"));
             services.AddSingleton<RdfQueryService>();
+
+            // For sparqlWriter.Save to work.
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var usesReverseProxy = Configuration.GetValue("UseReverseProxy", false);
             if (usesReverseProxy)
@@ -72,8 +84,9 @@ namespace GrayWing
             }
 
             app.UseStaticFiles();
+            app.UseRouting();
             app.UseCookiePolicy();
-            app.UseMvc();
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
 
         }
     }

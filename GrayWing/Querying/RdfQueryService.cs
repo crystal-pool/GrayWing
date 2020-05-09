@@ -30,7 +30,7 @@ namespace GrayWing.Querying
 
     }
 
-    public class RdfQueryService : IDisposable
+    public sealed class RdfQueryService : IDisposable
     {
 
         private readonly string dumpFileFullPath;
@@ -49,7 +49,7 @@ namespace GrayWing.Querying
         // Every after this milliseconds, we will check on disk whether the graph dump has been changed.
         private long CheckFileInterval = 3600 * 1000;
 
-        public RdfQueryService(IOptions<RdfQueryServiceOptions> options, ILoggerFactory loggerFactory, IHostingEnvironment hosting)
+        public RdfQueryService(IOptions<RdfQueryServiceOptions> options, ILoggerFactory loggerFactory, IWebHostEnvironment hosting)
         {
             this.options = options.Value;
             // Sanity check
