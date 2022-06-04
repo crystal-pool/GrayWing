@@ -128,5 +128,8 @@
       }
     }
   },
-  "defaultProject": "graywing-client"
+  "defaultProject": "graywing-client",
+  "cli": {
+    "packageManager": "yarn"
+  }
 }
