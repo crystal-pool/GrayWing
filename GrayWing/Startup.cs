@@ -42,7 +42,6 @@ namespace GrayWing
             services.AddSingleton<ITelemetryInitializer, MyTelemetryInitializer>();
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
             services.Configure<RdfQueryServiceOptions>(Configuration.GetSection("RdfQueryService"));
             services.AddSingleton<RdfQueryService>();
 
@@ -55,6 +54,8 @@ namespace GrayWing
             {
                 options.AllowSynchronousIO = true;
             });
+
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
