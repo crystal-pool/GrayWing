@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from "@angular/core/testing";
+import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
 import { SparqlVariableBindingViewComponent } from "./sparql-variable-binding-view.component";
 
@@ -6,7 +6,7 @@ describe("SparqlVariableBindingViewComponent", () => {
   let component: SparqlVariableBindingViewComponent;
   let fixture: ComponentFixture<SparqlVariableBindingViewComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SparqlVariableBindingViewComponent ]
     })
