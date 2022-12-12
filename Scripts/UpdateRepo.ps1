@@ -80,9 +80,9 @@ function buildServer() {
 function buildClient() {
     Write-Log "Build graywing-client"
     cd $ClientRoot
-    sudo -H -u $SERVICE_USER npm install
+    sudo -H -u $SERVICE_USER yarn
     checkLastExitCode
-    sudo -H -u $SERVICE_USER npm run build:prod
+    sudo -H -u $SERVICE_USER yarn build:prod
     checkLastExitCode
 }
 
