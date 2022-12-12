@@ -10389,13 +10389,13 @@ __metadata:
   linkType: hard
 
 "socket.io-parser@npm:~4.0.4":
-  version: 4.0.4
-  resolution: "socket.io-parser@npm:4.0.4"
+  version: 4.0.5
+  resolution: "socket.io-parser@npm:4.0.5"
   dependencies:
     "@types/component-emitter": "npm:^1.2.10"
     component-emitter: "npm:~1.3.0"
     debug: "npm:~4.3.1"
-  checksum: b30102c5987fd1387cf6c5d4b49f69e456df05f23e4a9dc747741552b3dccdf21d7dbfab01c46aa51086cd7d8cdef2305c53403097dc98dc86512191e0010b5c
+  checksum: 6a455b1de2c9d3b10ea4bb7b538f7b5dada1619d9588b82f92451a81a37c2cbaf8585737c6adbf53f4db5fa3d75a283b60adc8201c7ebf0c5dbeac581389be44
   languageName: node
   linkType: hard
 
