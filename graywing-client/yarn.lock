@@ -325,15 +325,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@angular/core@npm:^12.2.17":
-  version: 12.2.17
-  resolution: "@angular/core@npm:12.2.17"
+"@angular/core@npm:^13.0.0":
+  version: 13.3.12
+  resolution: "@angular/core@npm:13.3.12"
   dependencies:
-    tslib: "npm:^2.2.0"
+    tslib: "npm:^2.3.0"
   peerDependencies:
-    rxjs: ^6.5.3 || ^7.0.0
+    rxjs: ^6.5.3 || ^7.4.0
     zone.js: ~0.11.4
-  checksum: 9b0b7bb40645bc82cfe300a4d1434626e84ecf90f5fcb39cba035880e51f8c31e9a9d5946c68126c10b0a0983e8a2217d35e9c085fd996436df5c947997924ff
+  checksum: dba4674367012c051add9239a8f069000fe07fcb04461c60aec262e9442e7f16048a476d1daa85017fd154af24c2e8a58ba9f01d9254c61cd92516c424cecb30
   languageName: node
   linkType: hard
 
@@ -5639,7 +5639,7 @@ __metadata:
     "@angular/common": "npm:^12.2.17"
     "@angular/compiler": "npm:^12.2.17"
     "@angular/compiler-cli": "npm:^12.2.17"
-    "@angular/core": "npm:^12.2.17"
+    "@angular/core": "npm:^13.0.0"
     "@angular/forms": "npm:^12.2.17"
     "@angular/language-service": "npm:^12.2.17"
     "@angular/material": "npm:^12.2.13"
