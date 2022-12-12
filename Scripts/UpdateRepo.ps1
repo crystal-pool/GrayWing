@@ -82,7 +82,8 @@ function buildClient() {
     cd $ClientRoot
     sudo -H -u $SERVICE_USER yarn
     checkLastExitCode
-    sudo -H -u $SERVICE_USER yarn build:prod
+    # --openssl-legacy-provider: compat on Node 16+ to suppress ERR_OSSL_EVP_UNSUPPORTED
+    sudo -H -u $SERVICE_USER NODE_OPTIONS=--openssl-legacy-provider yarn build:prod
     checkLastExitCode
 }
 
