@@ -57,7 +57,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 if (-not $Force) {
-    if ( -not $IsLinux) {
+    if (-not $IsLinux) {
         throw [System.PlatformNotSupportedException]"The script is only supported on Linux OS."
     }
     if ((id -u) -ne 0) {
