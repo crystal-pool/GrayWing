@@ -1,15 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enabled</ImplicitUsings>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
     <ApplicationInsightsResourceId>/subscriptions/7d72b759-151b-4bca-86a7-d733dd90d1a9/resourcegroups/crystal-pool/providers/microsoft.insights/components/GrayWing</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/7d72b759-151b-4bca-86a7-d733dd90d1a9/resourcegroups/crystal-pool/providers/microsoft.insights/components/GrayWing</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="dotNetRDF" Version="2.7.4" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
+    <PackageReference Include="dotNetRDF" Version="3.3.2" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
   </ItemGroup>
 
   <ItemGroup>
