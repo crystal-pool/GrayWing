@@ -1,4 +1,5 @@
 #!/usr/bin/env pwsh
+#requires -Version 7.3
 
 <#
 .Synopsis
@@ -44,6 +45,11 @@ param(
     $LogRotateConfigDir = "/etc/logrotate.d",
 
     [Parameter(ParameterSetName = "Install")]
+    [Parameter(ParameterSetName = "Uninstall")]
+    [string]
+    $PolkitRulesDir = "/etc/polkit-1/rules.d",
+
+    [Parameter(ParameterSetName = "Install")]
     [Alias("CO")]
     [switch]
     $ChangeOwner,
@@ -55,6 +61,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
 
 if (-not $Force) {
     if (-not $IsLinux) {
@@ -67,14 +74,9 @@ if (-not $Force) {
 
 $SERVICE_NAME = "graywing-qs.service"
 $LOGROTATE_NAME = "graywing-qs.logrotate"
+$POLKIT_RULES_NAME = "50-graywing-qs.rules"
 $SERVICE_USER = "crystalpool"
 $SERVICE_LOG_ROOT = "/var/log/crystalpool/graywing-qs"
-
-function checkLastExitCode() {
-    if ($LASTEXITCODE) {
-        throw [System.Exception]"Command exit code indicates failure: $LASTEXITCODE."
-    }
-}
 
 function findAssetPath([string]$ScriptName) {
     $path = Resolve-Path @("$PSScriptRoot/$ScriptName", "./$ScriptName") -ErrorAction SilentlyContinue
@@ -96,6 +98,7 @@ function promptReplace([string]$Path) {
 
 $serviceTarget = Join-Path $SystemUnitDir $SERVICE_NAME
 $logRotateTarget = Join-Path $LogRotateConfigDir $LOGROTATE_NAME
+$polkitRulesTarget = Join-Path $PolkitRulesDir $POLKIT_RULES_NAME
 
 if ($Install) {
     if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
@@ -106,17 +109,23 @@ if ($Install) {
     Write-Host "Repo updater: $updateRepoPath"
     Write-Host "Service entrypoint: $runServerPath"
     if ($IsLinux) {
-        id -u $SERVICE_USER | Out-Null
-        $userExists = -not $LASTEXITCODE
-        id -g $SERVICE_USER | Out-Null
-        $groupExists = -not $LASTEXITCODE
+        $userExists = & {
+            $PSNativeCommandUseErrorActionPreference = $false
+            id -u $SERVICE_USER | Out-Null
+            -not $LASTEXITCODE
+        }
+        $groupExists = & {
+            $PSNativeCommandUseErrorActionPreference = $false
+            id -g $SERVICE_USER | Out-Null
+            -not $LASTEXITCODE
+        }
         if ($userExists -and $groupExists) {
+            # ${} needed for adjacent :
             Write-Host "Service account exists: ${SERVICE_USER}:$SERVICE_USER"
         }
         elseif (-not $userExists -and -not $groupExists) {
             Write-Host "Create service account: ${SERVICE_USER}:$SERVICE_USER"
             useradd --system --create-home --shell /usr/sbin/nologin $SERVICE_USER
-            checkLastExitCode
         }
         else {
             Write-Host "Is there already a real user with the same user name?"
@@ -128,7 +137,10 @@ if ($Install) {
         Replace("`$GRAY_WING_UPDATE_REPO_PATH", $updateRepoPath).`
         Replace("`$GRAY_WING_RUN_SERVER_PATH", $runServerPath)
     if ($IsLinux) {
-        [string]$status = systemctl is-active $SERVICE_NAME
+        [string]$status = & {
+            $PSNativeCommandUseErrorActionPreference = $false
+            systemctl is-active $SERVICE_NAME
+        }
         if ($status.Trim() -eq "active") {
             systemctl stop $SERVICE_NAME
         }
@@ -139,13 +151,11 @@ if ($Install) {
     $serviceContent > $serviceTarget
     if ($IsLinux) {
         chmod 664 $serviceTarget
-        checkLastExitCode
     }
     Write-Host "Installed: $serviceTarget"
     if ($IsLinux) {
         systemctl daemon-reload
         systemctl enable $SERVICE_NAME
-        checkLastExitCode
         Write-Host "Enabled: $serviceTarget"
     }
     Write-Host "Setup logrotate."
@@ -154,11 +164,17 @@ if ($Install) {
         return
     }
     $logRotateContent > $logRotateTarget
+    Write-Host "Setup polkit rules."
+    $polkitRulesContent = Get-Content (findAssetPath $POLKIT_RULES_NAME)
+    if (-not (promptReplace $polkitRulesTarget)) {
+        return
+    }
+    $polkitRulesContent > $polkitRulesTarget
+    Write-Host "Installed: $polkitRulesTarget"
     if ($ChangeOwner) {
         $repoRoot = Resolve-Path "$PSScriptRoot/.."
         Write-Host "chown -R on $repoRoot"
         chown -R "${SERVICE_USER}:$SERVICE_USER" $repoRoot
-        checkLastExitCode
     }
     if ($IsLinux) {
         Write-Host "Make sure working folders are accessible."
@@ -175,9 +191,9 @@ if ($Install) {
 elseif ($Uninstall) {
     systemctl stop $SERVICE_NAME
     systemctl disable $SERVICE_NAME
-    Remove-Item "$serviceTarget"
+    Remove-Item $serviceTarget -Verbose -ErrorAction Continue
+    Remove-Item $polkitRulesTarget -Verbose -ErrorAction Continue
     systemctl daemon-reload
-    systemctl reset-failed $SERVICE_NAME
     Write-Host "Uninstallation finished."
     Write-Host "Note: You may delete " -NoNewline
     Write-Host "${SERVICE_USER}:$SERVICE_USER" -NoNewline -ForegroundColor DarkCyan

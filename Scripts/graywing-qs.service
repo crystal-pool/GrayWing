@@ -11,7 +11,7 @@ StartLimitBurst=5
 Type=simple
 User=crystalpool
 Group=crystalpool
-ExecStartPre=+"$GRAY_WING_UPDATE_REPO_PATH" -Install
+ExecStartPre="$GRAY_WING_UPDATE_REPO_PATH" -Install
 ExecStart="$GRAY_WING_RUN_SERVER_PATH"
 StandardOutput=journal
 StandardError=journal
@@ -20,7 +20,7 @@ Restart=on-failure
 RestartSec=5
 
 KillSignal=SIGINT
-ExecStopPost=+"$GRAY_WING_UPDATE_REPO_PATH" -Uninstall
+ExecStopPost="$GRAY_WING_UPDATE_REPO_PATH" -Uninstall
 
 [Install]
 WantedBy=multi-user.target

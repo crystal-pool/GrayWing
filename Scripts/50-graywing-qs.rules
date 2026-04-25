@@ -1,0 +1,13 @@
+// Allows the crystalpool service user to manage graywing-qs.service without root.
+// Use ./ServiceInstaller.ps1 to install this rule.
+polkit.addRule(function (action, subject) {
+    if (action.id == "org.freedesktop.systemd1.manage-units"
+        && action.lookup("unit") == "graywing-qs.service"
+        && subject.user == "crystalpool"
+        && ["start", "stop", "restart", "reload"].indexOf(action.lookup("verb")) >= 0
+    ) {
+        return polkit.Result.YES;
+    }
+
+    return polkit.Result.NOT_HANDLED;
+});
